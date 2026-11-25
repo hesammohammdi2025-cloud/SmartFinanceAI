@@ -1,0 +1,720 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>داشبورد حقوق دریافتی | SmartFinance AI</title>
+
+    <style>
+        :root {
+            --bg: #080f20;
+            --surface: rgba(20, 32, 56, .84);
+            --surface-light: rgba(30, 43, 72, .75);
+            --border: rgba(148, 163, 184, .17);
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --cyan: #38bdf8;
+            --blue: #2563eb;
+            --purple: #8b5cf6;
+            --green: #4ade80;
+            --danger: #fb7185;
+        }
+
+        * {
+            box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: #315a9b #07132f;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 30px 18px;
+            font-family: Tahoma, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(ellipse at 10% 10%, rgba(37, 99, 235, .2), transparent 38%),
+                radial-gradient(ellipse at 90% 85%, rgba(139, 92, 246, .16), transparent 38%),
+                #080f20;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            opacity: .25;
+            background-image:
+                radial-gradient(1px 1px at 15% 20%, #fff 50%, transparent),
+                radial-gradient(1px 1px at 75% 35%, #fff 50%, transparent),
+                radial-gradient(2px 2px at 45% 75%, #fff 50%, transparent),
+                radial-gradient(1px 1px at 90% 65%, #fff 50%, transparent);
+            background-size: 250px 250px;
+        }
+
+        *::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        *::-webkit-scrollbar-track {
+            background: #07132f;
+        }
+
+        *::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #38bdf8, #8b5cf6);
+            border-radius: 20px;
+        }
+
+        .container {
+            width: min(100%, 1250px);
+            margin: auto;
+        }
+
+        /* Header */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 23px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .2);
+            backdrop-filter: blur(16px);
+            animation: fadeUp .6s ease both;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 53px;
+            height: 53px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            font-size: 25px;
+            background: linear-gradient(135deg, #0284c7, #6366f1, #8b5cf6);
+            box-shadow: 0 0 25px rgba(56, 189, 248, .3);
+        }
+
+        .brand h2 {
+            margin: 0 0 7px;
+            font-size: 19px;
+            color: white;
+        }
+
+        .brand p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 10px;
+            direction: ltr;
+            text-align: right;
+        }
+
+        h1 {
+            margin: 0;
+            color: white;
+            font-size: 23px;
+            text-shadow: 0 0 15px rgba(56, 189, 248, .3);
+        }
+
+        .description {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 2;
+        }
+
+        /* Buttons */
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 17px;
+            border-radius: 11px;
+            text-decoration: none;
+            border: 1px solid rgba(56, 189, 248, .3);
+            color: white;
+            background: linear-gradient(135deg, #0369a1, #3730a3);
+            box-shadow: 0 5px 18px rgba(37, 99, 235, .16);
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: bold;
+            transition: .25s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 24px rgba(56, 189, 248, .2);
+            filter: brightness(1.12);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .back {
+            background: rgba(51, 65, 85, .6);
+            border-color: var(--border);
+        }
+
+        .excel {
+            background: linear-gradient(135deg, #047857, #065f46);
+            border-color: rgba(74, 222, 128, .3);
+        }
+
+        .pdf {
+            background: linear-gradient(135deg, #be123c, #7e22ce);
+            border-color: rgba(251, 113, 133, .3);
+        }
+
+        /* Cards */
+
+        .card {
+            position: relative;
+            padding: 25px;
+            margin-bottom: 21px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 19px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .18);
+            overflow: hidden;
+            backdrop-filter: blur(16px);
+            animation: fadeUp .65s ease both;
+            transition: border-color .3s, box-shadow .3s;
+        }
+
+        .card:hover {
+            border-color: rgba(56, 189, 248, .4);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .2),
+                        0 0 20px rgba(56, 189, 248, .07);
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            top: -110px;
+            left: -60px;
+            background: rgba(56, 189, 248, .1);
+            filter: blur(45px);
+            pointer-events: none;
+        }
+
+        .card h2 {
+            color: #eaf5ff;
+        }
+
+        /* Salary Summary */
+
+        .summary {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 25px;
+            background:
+                radial-gradient(ellipse at 10% 50%, rgba(56, 189, 248, .17), transparent 50%),
+                linear-gradient(120deg, rgba(9, 28, 75, .85), rgba(35, 22, 76, .85));
+            border-color: rgba(56, 189, 248, .35);
+        }
+
+        .summary h2 {
+            color: #cbd5e1;
+            font-size: 16px;
+        }
+
+        .amount {
+            color: var(--green);
+            font-size: clamp(25px, 4vw, 36px);
+            font-weight: bold;
+            text-shadow: 0 0 18px rgba(74, 222, 128, .25);
+            overflow-wrap: anywhere;
+        }
+
+        .summary-info {
+            min-width: 160px;
+            padding: 20px;
+            text-align: center;
+            background: rgba(8, 15, 32, .4);
+            border: 1px solid rgba(56, 189, 248, .2);
+            border-radius: 15px;
+        }
+
+        .summary-info strong {
+            display: block;
+            color: var(--cyan);
+            font-size: 29px;
+            margin-top: 9px;
+            text-shadow: 0 0 15px rgba(56, 189, 248, .25);
+        }
+
+        /* Section Headings */
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 23px;
+            color: white;
+            font-size: 17px;
+        }
+
+        .section-heading::before {
+            content: "";
+            width: 5px;
+            height: 25px;
+            border-radius: 5px;
+            background: linear-gradient(var(--cyan), var(--purple));
+            box-shadow: 0 0 12px rgba(56, 189, 248, .4);
+        }
+
+        /* Filters */
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        label {
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+
+        select {
+            width: 100%;
+            background: rgba(8, 15, 32, .8);
+            color: white;
+            border: 1px solid rgba(56, 189, 248, .25);
+            padding: 13px;
+            border-radius: 11px;
+            min-width: 130px;
+            font-family: inherit;
+            outline: none;
+            transition: .25s ease;
+        }
+
+        select:hover {
+            border-color: rgba(56, 189, 248, .55);
+        }
+
+        select:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 14px rgba(56, 189, 248, .15);
+        }
+
+        select option {
+            background: #0f172a;
+            color: white;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* Table */
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 13px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th, td {
+            padding: 16px 15px;
+            text-align: right;
+            border-bottom: 1px solid rgba(148, 163, 184, .12);
+        }
+
+        th {
+            color: var(--cyan);
+            font-size: 12px;
+            background: rgba(15, 35, 72, .8);
+            white-space: nowrap;
+        }
+
+        td {
+            color: #e2e8f0;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        tbody tr {
+            transition: background .2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(56, 189, 248, .06);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .salary-amount {
+            color: var(--green);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .salary-title {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .date-value {
+            direction: ltr;
+            display: inline-block;
+            color: #bfdbfe;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 40px !important;
+            line-height: 2;
+        }
+
+        .empty-icon {
+            font-size: 34px;
+            margin-bottom: 12px;
+        }
+
+        /* Footer */
+
+        .footer {
+            text-align: center;
+            padding: 24px 15px;
+            color: #8194bd;
+            font-size: 11px;
+            border-top: 1px solid var(--border);
+            line-height: 2;
+        }
+
+        .footer span {
+            color: var(--cyan);
+            font-weight: bold;
+        }
+
+        /* Animations */
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+
+        @media (max-width: 850px) {
+            body {
+                padding: 20px;
+            }
+
+            .header {
+                align-items: flex-start;
+            }
+
+            .header > div:nth-child(2) {
+                flex: 1;
+                min-width: 220px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 13px;
+            }
+
+            .header {
+                padding: 18px;
+                gap: 18px;
+            }
+
+            .header h1 {
+                font-size: 19px;
+            }
+
+            .brand-icon {
+                width: 47px;
+                height: 47px;
+            }
+
+            .header > a {
+                width: 100%;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .summary-info {
+                text-align: right;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .field {
+                width: 100%;
+            }
+
+            .filters .btn,
+            .filters button {
+                width: 100%;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .section-heading {
+                font-size: 15px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+
+        <div class="brand">
+            <div class="brand-icon">💠</div>
+
+            <div>
+                <h2>SmartFinance AI</h2>
+                <p>Intelligent Financial Management</p>
+            </div>
+        </div>
+
+        <div>
+            <h1>داشبورد حقوق دریافتی</h1>
+
+            <p class="description">
+                سازمان: {{ organization.name }}
+            </p>
+        </div>
+
+        <a href="{% url 'accounts:organization_list' %}"
+           class="btn back">
+            ← بازگشت به سازمان‌ها
+        </a>
+
+    </header>
+
+
+    <section class="card summary">
+
+        <div>
+            <h2>💰 مجموع حقوق دریافتی در دوره انتخاب‌شده</h2>
+
+            <div class="amount">
+                {{ total_salary|floatformat:0 }} تومان
+            </div>
+
+            <p class="description">
+                مجموع پرداخت‌های حقوقی در بازه انتخاب‌شده
+            </p>
+        </div>
+
+        <div class="summary-info">
+            <span class="description">تعداد پرداخت‌ها</span>
+            <strong>{{ salaries|length }}</strong>
+        </div>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2 class="section-heading">فیلتر و خروجی گزارش</h2>
+
+        <form method="get" class="filters">
+
+            <div class="field">
+                <label for="year">📅 سال</label>
+
+                <select name="year" id="year">
+                    {% for year in years %}
+                        <option value="{{ year }}"
+                            {% if selected_year == year %}
+                                selected
+                            {% endif %}>
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="month">🗓 ماه</label>
+
+                <select name="month" id="month">
+                    <option value="">همه ماه‌ها</option>
+
+                    {% for month in months %}
+                        <option value="{{ month }}"
+                            {% if selected_month == month %}
+                                selected
+                            {% endif %}>
+                            {{ month }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn">
+                🔎 اعمال فیلتر
+            </button>
+
+            <a class="btn excel"
+               href="{% url 'viewer_salary_export_excel' organization.id %}?year={{ selected_year }}&month={{ selected_month }}">
+                📊 خروجی Excel
+            </a>
+
+            <a class="btn pdf"
+               href="{% url 'viewer_salary_export_pdf' organization.id %}?year={{ selected_year }}&month={{ selected_month }}">
+                📄 خروجی PDF
+            </a>
+
+        </form>
+
+    </section>
+
+
+    <section class="card">
+
+        <h2 class="section-heading">📋 سوابق پرداخت حقوق</h2>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>عنوان پرداخت</th>
+                        <th>مبلغ</th>
+                        <th>تاریخ پرداخت</th>
+                        <th>ساعت پرداخت</th>
+                        <th>توضیحات</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for salary in salaries %}
+
+                        <tr>
+
+                            <td class="salary-title">
+                                {{ salary.title }}
+                            </td>
+
+                            <td class="salary-amount">
+                                {{ salary.amount|floatformat:0 }} تومان
+                            </td>
+
+                            <td>
+                                <span class="date-value">
+                                    {{ salary.paid_at|date:"Y-m-d" }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="date-value">
+                                    {{ salary.paid_at|time:"H:i" }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ salary.description|default:"-" }}
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+                            <td colspan="5" class="empty">
+                                <div class="empty-icon">📭</div>
+                                در دوره انتخاب‌شده پرداخت حقوقی ثبت نشده است.
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <footer class="footer">
+        <span>SmartFinance AI</span>
+        — مدیریت هوشمند امور مالی
+    </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,223 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+حذف تراکنش | SmartFinance AI
+{% endblock %}
+
+{% block extra_css %}
+
+.delete-page {
+    width: min(100% - 32px, 560px);
+    margin: 65px auto;
+    animation: deleteFadeIn .5s ease both;
+}
+
+.delete-card {
+    position: relative;
+    overflow: hidden;
+    padding: 38px 30px;
+    border: 1px solid rgba(248, 113, 113, .25);
+    border-radius: 24px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 41, 59, .96),
+        rgba(15, 23, 42, .97)
+    );
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+    text-align: center;
+    backdrop-filter: blur(18px);
+}
+
+.delete-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.delete-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 22px;
+    border: 1px solid rgba(248, 113, 113, .3);
+    border-radius: 23px;
+    background: rgba(239, 68, 68, .1);
+    color: #f87171;
+    font-size: 34px;
+    box-shadow: 0 0 28px rgba(239, 68, 68, .1);
+}
+
+.delete-card h1 {
+    margin: 0 0 17px;
+    color: #f8fafc;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.delete-description {
+    margin: 0 auto 25px;
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 2.2;
+}
+
+.delete-transaction-name {
+    display: block;
+    margin: 18px 0;
+    padding: 14px;
+    border: 1px solid rgba(248, 113, 113, .2);
+    border-radius: 12px;
+    background: rgba(239, 68, 68, .07);
+    color: #fca5a5;
+    font-size: 15px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.delete-warning {
+    margin-bottom: 28px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.9;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.delete-button,
+.cancel-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 48px;
+    padding: 12px 15px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.delete-button {
+    border: 0;
+    background: linear-gradient(120deg, #dc2626, #f87171);
+    color: white;
+    box-shadow: 0 7px 20px rgba(239, 68, 68, .18);
+}
+
+.delete-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, .3);
+}
+
+.cancel-button {
+    border: 1px solid #475569;
+    background: rgba(51, 65, 85, .45);
+    color: #e2e8f0;
+}
+
+.cancel-button:hover {
+    transform: translateY(-2px);
+    background: rgba(71, 85, 105, .55);
+}
+
+@keyframes deleteFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 500px) {
+    .delete-page {
+        margin: 35px auto;
+    }
+
+    .delete-card {
+        padding: 30px 18px;
+    }
+
+    .delete-card h1 {
+        font-size: 21px;
+    }
+
+    .delete-actions {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .delete-page {
+        animation: none;
+    }
+
+    .delete-button,
+    .cancel-button {
+        transition: none;
+    }
+}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="delete-page">
+
+    <div class="delete-card">
+
+        <div class="delete-icon">
+            ⚠️
+        </div>
+
+        <h1>حذف تراکنش</h1>
+
+        <p class="delete-description">
+            آیا مطمئنی که می‌خواهی تراکنش زیر را حذف کنی؟
+        </p>
+
+        <div class="delete-transaction-name">
+            {{ transaction.title }}
+        </div>
+
+        <p class="delete-warning">
+            پس از تأیید، این تراکنش حذف خواهد شد.
+            لطفاً قبل از ادامه از انتخاب خود مطمئن شو.
+        </p>
+
+        <div class="delete-actions">
+
+            <form method="post" style="flex: 1;">
+                {% csrf_token %}
+
+                <button type="submit" class="delete-button" style="width: 100%;">
+                    حذف تراکنش
+                </button>
+            </form>
+
+            <a href="{% url 'home' %}" class="cancel-button">
+                انصراف
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

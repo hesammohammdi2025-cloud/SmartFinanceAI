@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>
+        {% if is_edit %}
+            ویرایش بودجه سازمان
+        {% else %}
+            ثبت بودجه سازمان
+        {% endif %}
+        | SmartFinance AI
+    </title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 35px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(37,99,235,.17), transparent 35%),
+                radial-gradient(circle at 85% 80%, rgba(124,58,237,.15), transparent 35%),
+                #080f1e;
+            color: #e2e8f0;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: 680px;
+            animation: fadeIn .65s ease both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header-icon {
+            width: 62px;
+            height: 62px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 19px;
+            background: linear-gradient(135deg,#0284c7,#6366f1);
+            box-shadow: 0 0 30px rgba(56,189,248,.2);
+            font-size: 27px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 22px;
+            background: linear-gradient(90deg,#7dd3fc,#a5b4fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-header p {
+            margin-top: 11px;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .organization-name {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 8px 15px;
+            border: 1px solid rgba(56,189,248,.2);
+            border-radius: 9px;
+            background: rgba(56,189,248,.07);
+            color: #7dd3fc;
+            font-size: 12px;
+        }
+
+        .form-card {
+            padding: 30px;
+            border-radius: 22px;
+            background: rgba(15,23,42,.82);
+            border: 1px solid rgba(148,163,184,.17);
+            box-shadow: 0 20px 60px rgba(0,0,0,.32);
+            backdrop-filter: blur(18px);
+        }
+
+        .form-title {
+            margin: 0 0 8px;
+            color: #f1f5f9;
+            font-size: 17px;
+        }
+
+        .form-description {
+            margin: 0 0 25px;
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .form-field {
+            margin-bottom: 21px;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 9px;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            display: block;
+            width: 100%;
+            min-height: 46px;
+            padding: 11px 13px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            outline: none;
+            background: rgba(8,15,30,.85);
+            color: #f8fafc;
+            font-family: inherit;
+            font-size: 12px;
+            transition: border-color .25s ease,
+                        box-shadow .25s ease;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56,189,248,.1);
+        }
+
+        .form-field select option {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        .form-field .helptext {
+            display: block;
+            margin-top: 7px;
+            color: #94a3b8;
+            font-size: 10px;
+            line-height: 1.9;
+        }
+
+        .error {
+            margin-top: 8px;
+            color: #fda4af;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .error ul {
+            padding-right: 18px;
+            margin: 5px 0;
+        }
+
+        .non-field-errors {
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            border: 1px solid rgba(244,63,94,.25);
+            border-radius: 10px;
+            background: rgba(244,63,94,.09);
+            color: #fda4af;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .non-field-errors ul {
+            margin: 0;
+            padding-right: 18px;
+        }
+
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 27px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 20px;
+            border: 1px solid transparent;
+            border-radius: 11px;
+            text-decoration: none;
+            text-align: center;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform .25s ease,
+                        box-shadow .25s ease,
+                        background .25s ease;
+        }
+
+        .submit-button {
+            background: linear-gradient(110deg,#0284c7,#4f46e5);
+            border-color: rgba(125,211,252,.2);
+            color: white;
+            box-shadow: 0 8px 23px rgba(37,99,235,.2);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(37,99,235,.3);
+        }
+
+        .cancel-button {
+            background: rgba(148,163,184,.06);
+            border-color: rgba(148,163,184,.18);
+            color: #94a3b8;
+        }
+
+        .cancel-button:hover {
+            background: rgba(148,163,184,.12);
+            color: #e2e8f0;
+            border-color: rgba(148,163,184,.3);
+        }
+
+        .footer {
+            margin-top: 22px;
+            color: #475569;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .form-card {
+                padding: 23px 18px;
+            }
+
+            .page-header h1 {
+                font-size: 19px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <header class="page-header">
+
+        <div class="header-icon">
+            🏢
+        </div>
+
+        {% if is_edit %}
+            <h1>ویرایش بودجه سازمان</h1>
+            <p>
+                اطلاعات بودجه سازمان را ویرایش و تغییرات را ذخیره کنید.
+            </p>
+        {% else %}
+            <h1>ثبت بودجه سازمان</h1>
+            <p>
+                برای مدیریت بهتر هزینه‌های سازمان، بودجه جدید ثبت کنید.
+            </p>
+        {% endif %}
+
+        <div class="organization-name">
+            سازمان: {{ organization.name }}
+        </div>
+
+    </header>
+
+
+    <main class="form-card">
+
+        <h2 class="form-title">
+            {% if is_edit %}
+                اطلاعات بودجه
+            {% else %}
+                اطلاعات بودجه جدید
+            {% endif %}
+        </h2>
+
+        <p class="form-description">
+            فیلدهای موردنیاز را تکمیل کنید.
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            {% for field in form %}
+
+                <div class="form-field">
+
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="helptext">
+                            {{ field.help_text }}
+                        </small>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <p class="error">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+
+            {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+
+            <div class="form-actions">
+
+                <button type="submit" class="button submit-button">
+
+                    {% if is_edit %}
+                        ذخیره تغییرات
+                    {% else %}
+                        ثبت بودجه
+                    {% endif %}
+
+                </button>
+
+
+                <a
+                    class="button cancel-button"
+                    href="{% url 'budgeting:organization_budget_list' organization.id %}"
+                >
+                    انصراف و بازگشت
+                </a>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <footer class="footer">
+        SmartFinance AI · Intelligent Financial Management
+    </footer>
+
+</div>
+
+</body>
+</html>

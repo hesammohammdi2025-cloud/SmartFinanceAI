@@ -1,0 +1,500 @@
+
+{% extends "accounts/base_accounts.html" %}
+
+{% block title %}مدیریت دعوت‌نامه‌ها{% endblock %}
+
+{% block content %}
+
+<div class="invitations-page">
+
+    <div class="page-icon">
+        <span>✉</span>
+    </div>
+
+    <h1>مدیریت دعوت‌نامه‌ها</h1>
+
+    <p class="description">
+        مشاهده و مدیریت دعوت‌نامه‌های سازمان
+        <strong>{{ organization.name }}</strong>
+    </p>
+
+
+    {% if invitations %}
+
+        <div class="invitations-summary">
+            <span class="summary-dot"></span>
+            تعداد دعوت‌نامه‌ها:
+            <strong>{{ invitations|length }}</strong>
+        </div>
+
+        {% for invitation in invitations %}
+
+            <section class="invitation-card">
+
+                <div class="invitation-header">
+
+                    <div class="invitation-avatar">
+                        ✉
+                    </div>
+
+                    <div class="invitation-recipient">
+
+                        <span class="recipient-label">
+                            دعوت‌نامه ارسال‌شده به
+                        </span>
+
+                        <strong dir="ltr">
+                            {{ invitation.email }}
+                        </strong>
+
+                    </div>
+
+                    <div class="invitation-status">
+
+                        {% if invitation.accepted_at %}
+
+                            <span class="status-badge accepted">
+                                <span class="status-dot"></span>
+                                پذیرفته‌شده
+                            </span>
+
+                        {% elif invitation.revoked_at %}
+
+                            <span class="status-badge revoked">
+                                <span class="status-dot"></span>
+                                لغوشده
+                            </span>
+
+                        {% elif invitation.is_expired %}
+
+                            <span class="status-badge expired">
+                                <span class="status-dot"></span>
+                                منقضی‌شده
+                            </span>
+
+                        {% else %}
+
+                            <span class="status-badge pending">
+                                <span class="status-dot"></span>
+                                در انتظار پاسخ
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div class="invitation-details">
+
+                    <div class="detail-item">
+
+                        <span class="detail-icon">♙</span>
+
+                        <div>
+                            <span class="detail-label">نقش دعوت‌شده</span>
+
+                            <strong>
+                                {{ invitation.get_role_display }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span class="detail-icon">♧</span>
+
+                        <div>
+                            <span class="detail-label">دعوت‌کننده</span>
+
+                            <strong>
+                                {{ invitation.invited_by }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span class="detail-icon">◷</span>
+
+                        <div>
+                            <span class="detail-label">تاریخ ایجاد</span>
+
+                            <strong dir="ltr">
+                                {{ invitation.created_at|date:"Y/m/d H:i" }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span class="detail-icon">⌛</span>
+
+                        <div>
+                            <span class="detail-label">تاریخ انقضا</span>
+
+                            <strong dir="ltr">
+                                {{ invitation.expires_at|date:"Y/m/d H:i" }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {% if not invitation.accepted_at and not invitation.revoked_at and not invitation.is_expired %}
+
+                    <div class="invitation-actions">
+
+                        <form
+                            method="POST"
+                            action="{% url 'accounts:organization_invitation_cancel' organization.id invitation.id %}"
+                            onsubmit="return confirm('آیا از لغو این دعوت‌نامه مطمئن هستید؟');"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="btn cancel-invitation-btn"
+                            >
+                                لغو دعوت‌نامه
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">✉</div>
+
+            <h3>هنوز دعوت‌نامه‌ای ثبت نشده است</h3>
+
+            <p>
+                در حال حاضر هیچ دعوت‌نامه‌ای برای این سازمان وجود ندارد.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <a
+        href="{% url 'accounts:organization_list' %}"
+        class="back-link"
+    >
+        ← بازگشت به سازمان‌های من
+    </a>
+
+</div>
+
+
+<style>
+
+    .invitations-page {
+        width: 100%;
+    }
+
+    .page-icon {
+        width: 62px;
+        height: 62px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 19px;
+        background: linear-gradient(
+            135deg,
+            rgba(56,189,248,.18),
+            rgba(129,140,248,.18)
+        );
+        border: 1px solid rgba(56,189,248,.3);
+        box-shadow: 0 0 30px rgba(56,189,248,.1);
+    }
+
+    .page-icon span {
+        font-size: 29px;
+        color: #7dd3fc;
+    }
+
+    .invitations-page > h1 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .invitations-page > .description {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .invitations-page > .description strong {
+        color: #7dd3fc;
+    }
+
+    .invitations-summary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 13px 15px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+        background: rgba(56,189,248,.07);
+        border: 1px solid rgba(56,189,248,.17);
+        color: #cbd5e1;
+        font-size: 12px;
+    }
+
+    .invitations-summary strong {
+        color: #7dd3fc;
+    }
+
+    .summary-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #38bdf8;
+        box-shadow: 0 0 10px rgba(56,189,248,.6);
+    }
+
+    .invitation-card {
+        padding: 20px;
+        margin-bottom: 17px;
+        border-radius: 17px;
+        background: rgba(8,15,30,.55);
+        border: 1px solid rgba(148,163,184,.16);
+        transition: border-color .25s ease,
+                    transform .25s ease,
+                    box-shadow .25s ease;
+    }
+
+    .invitation-card:hover {
+        border-color: rgba(56,189,248,.3);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(0,0,0,.2);
+    }
+
+    .invitation-header {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        flex-wrap: wrap;
+        padding-bottom: 17px;
+        border-bottom: 1px solid rgba(148,163,184,.12);
+    }
+
+    .invitation-avatar {
+        width: 47px;
+        height: 47px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: linear-gradient(135deg,#0284c7,#6366f1);
+        color: white;
+        font-size: 21px;
+        box-shadow: 0 5px 18px rgba(37,99,235,.22);
+    }
+
+    .invitation-recipient {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .recipient-label {
+        color: #64748b;
+        font-size: 10px;
+    }
+
+    .invitation-recipient strong {
+        color: #f1f5f9;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+        text-align: right;
+    }
+
+    .invitation-status {
+        display: flex;
+        align-items: center;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 11px;
+        border-radius: 9px;
+        font-size: 10px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    .accepted {
+        color: #4ade80;
+        background: rgba(34,197,94,.1);
+        border: 1px solid rgba(34,197,94,.2);
+    }
+
+    .revoked {
+        color: #fb7185;
+        background: rgba(244,63,94,.1);
+        border: 1px solid rgba(244,63,94,.2);
+    }
+
+    .expired {
+        color: #fbbf24;
+        background: rgba(245,158,11,.1);
+        border: 1px solid rgba(245,158,11,.2);
+    }
+
+    .pending {
+        color: #38bdf8;
+        background: rgba(56,189,248,.1);
+        border: 1px solid rgba(56,189,248,.2);
+    }
+
+    .invitation-details {
+        display: grid;
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 17px;
+        padding: 19px 0;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 0;
+    }
+
+    .detail-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: rgba(56,189,248,.09);
+        color: #7dd3fc;
+        font-size: 17px;
+    }
+
+    .detail-item > div {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    .detail-label {
+        color: #64748b;
+        font-size: 10px;
+    }
+
+    .detail-item strong {
+        color: #cbd5e1;
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+
+    .invitation-actions {
+        padding-top: 15px;
+        border-top: 1px solid rgba(148,163,184,.12);
+    }
+
+    .invitation-actions form {
+        margin: 0;
+    }
+
+    .cancel-invitation-btn {
+        background: linear-gradient(110deg,#991b1b,#e11d48);
+        border: 1px solid rgba(251,113,133,.25);
+        box-shadow: 0 6px 18px rgba(225,29,72,.12);
+    }
+
+    .cancel-invitation-btn:hover {
+        box-shadow: 0 9px 22px rgba(225,29,72,.22);
+    }
+
+    .empty-state {
+        padding: 35px 15px;
+        text-align: center;
+        border-radius: 15px;
+        border: 1px dashed rgba(148,163,184,.22);
+        background: rgba(30,41,59,.3);
+    }
+
+    .empty-icon {
+        font-size: 35px;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+        color: #e2e8f0;
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+
+    .empty-state p {
+        color: #94a3b8;
+        font-size: 12px;
+        line-height: 1.9;
+    }
+
+    .invitations-page > .back-link {
+        margin-top: 25px;
+    }
+
+    @media (max-width: 520px) {
+
+        .invitation-card {
+            padding: 15px;
+        }
+
+        .invitation-status {
+            width: 100%;
+        }
+
+        .invitation-details {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .invitation-actions .btn {
+            width: 100%;
+        }
+
+    }
+
+</style>
+
+{% endblock %}

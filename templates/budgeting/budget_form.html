@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ثبت بودجه | SmartFinance AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 35px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(37,99,235,.17), transparent 35%),
+                radial-gradient(circle at 85% 80%, rgba(124,58,237,.15), transparent 35%),
+                #080f1e;
+            color: #e2e8f0;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: 650px;
+            animation: fadeIn .65s ease both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header-icon {
+            width: 62px;
+            height: 62px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 19px;
+            background: linear-gradient(135deg,#0284c7,#6366f1);
+            box-shadow: 0 0 30px rgba(56,189,248,.2);
+            font-size: 27px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 23px;
+            background: linear-gradient(90deg,#7dd3fc,#a5b4fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-header p {
+            margin-top: 10px;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .form-card {
+            padding: 30px;
+            border-radius: 22px;
+            background: rgba(15,23,42,.82);
+            border: 1px solid rgba(148,163,184,.17);
+            box-shadow: 0 20px 60px rgba(0,0,0,.32);
+            backdrop-filter: blur(18px);
+        }
+
+        .form-title {
+            margin: 0 0 8px;
+            color: #f1f5f9;
+            font-size: 17px;
+        }
+
+        .form-description {
+            margin: 0 0 25px;
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .form-field {
+            margin-bottom: 21px;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 9px;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            display: block;
+            width: 100%;
+            min-height: 46px;
+            padding: 11px 13px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            outline: none;
+            background: rgba(8,15,30,.85);
+            color: #f8fafc;
+            font-family: inherit;
+            font-size: 12px;
+            transition: border-color .25s ease,
+                        box-shadow .25s ease;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56,189,248,.1);
+        }
+
+        .form-field input::placeholder,
+        .form-field textarea::placeholder {
+            color: #64748b;
+        }
+
+        .form-field select option {
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        .form-field .helptext {
+            display: block;
+            margin-top: 7px;
+            color: #94a3b8;
+            font-size: 10px;
+            line-height: 1.9;
+        }
+
+        .errorlist {
+            padding-right: 18px;
+            margin: 8px 0 0;
+            color: #fda4af;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .non-field-errors {
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            border: 1px solid rgba(244,63,94,.25);
+            border-radius: 10px;
+            background: rgba(244,63,94,.09);
+            color: #fda4af;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .non-field-errors ul {
+            margin: 0;
+        }
+
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+            margin-top: 27px;
+        }
+
+        .submit-button {
+            width: 100%;
+            min-height: 49px;
+            border: 1px solid rgba(125,211,252,.2);
+            border-radius: 11px;
+            background: linear-gradient(110deg,#0284c7,#4f46e5);
+            color: white;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 23px rgba(37,99,235,.2);
+            transition: transform .25s ease,
+                        box-shadow .25s ease,
+                        filter .25s ease;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 12px 28px rgba(37,99,235,.3);
+        }
+
+        .back-link {
+            display: block;
+            padding: 12px;
+            border: 1px solid rgba(148,163,184,.15);
+            border-radius: 10px;
+            color: #94a3b8;
+            text-align: center;
+            text-decoration: none;
+            font-size: 11px;
+            transition: .25s ease;
+        }
+
+        .back-link:hover {
+            color: #7dd3fc;
+            border-color: rgba(56,189,248,.35);
+            background: rgba(56,189,248,.05);
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #475569;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .form-card {
+                padding: 23px 18px;
+            }
+
+            .page-header h1 {
+                font-size: 20px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-container">
+
+    <header class="page-header">
+
+        <div class="header-icon">
+            <span>💰</span>
+        </div>
+
+        <h1>مدیریت هوشمند بودجه</h1>
+
+        <p>
+            برای مدیریت بهتر هزینه‌ها، بودجه ماهانه خود را ثبت کنید.
+        </p>
+
+    </header>
+
+
+    <main class="form-card">
+
+        <h2 class="form-title">
+            ثبت بودجه ماهانه
+        </h2>
+
+        <p class="form-description">
+            اطلاعات بودجه موردنظر را وارد کرده و ذخیره کنید.
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+
+            {% for field in form %}
+
+                <div class="form-field">
+
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="helptext">
+                            {{ field.help_text }}
+                        </small>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        {{ field.errors }}
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+
+            <div class="form-actions">
+
+                <button type="submit" class="submit-button">
+                    ذخیره بودجه
+                </button>
+
+                <a href="{% url 'budgeting:budget_list' %}" class="back-link">
+                    بازگشت به فهرست بودجه‌ها
+                </a>
+
+            </div>
+
+        </form>
+
+    </main>
+
+
+    <footer class="footer">
+        SmartFinance AI · Intelligent Financial Management
+    </footer>
+
+</div>
+
+</body>
+</html>

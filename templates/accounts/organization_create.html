@@ -1,0 +1,140 @@
+
+{% extends "accounts/base_accounts.html" %}
+
+{% block title %}ایجاد سازمان جدید{% endblock %}
+
+{% block content %}
+
+<div class="create-organization">
+
+    <div class="form-icon">
+        <span>✦</span>
+    </div>
+
+    <h1>ایجاد سازمان جدید</h1>
+
+    <p class="description">
+        برای مدیریت مالی گروهی، نام سازمان خود را وارد کنید.
+        پس از ایجاد سازمان می‌توانید اعضا را دعوت کرده و امور مالی
+        مجموعه را مدیریت کنید.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+
+            <label for="organization-name">
+                نام سازمان
+            </label>
+
+            <input
+                type="text"
+                id="organization-name"
+                name="name"
+                placeholder="مثلاً شرکت هوشمند آریانا"
+                maxlength="255"
+                autocomplete="organization"
+                required
+            >
+
+            <span class="field-hint">
+                نامی انتخاب کنید که اعضای سازمان بتوانند به‌راحتی آن را تشخیص دهند.
+            </span>
+
+        </div>
+
+        <button type="submit" class="btn">
+            <span>✦</span>
+            ثبت سازمان
+        </button>
+
+    </form>
+
+    <a href="{% url 'accounts:organization_list' %}" class="back-link">
+        ← بازگشت به سازمان‌های من
+    </a>
+
+</div>
+
+<style>
+    .create-organization {
+        width: 100%;
+    }
+
+    .form-icon {
+        width: 62px;
+        height: 62px;
+        margin: 0 auto 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 19px;
+        background: linear-gradient(
+            135deg,
+            rgba(56, 189, 248, .18),
+            rgba(129, 140, 248, .18)
+        );
+        border: 1px solid rgba(56, 189, 248, .3);
+        box-shadow: 0 0 30px rgba(56, 189, 248, .1);
+    }
+
+    .form-icon span {
+        font-size: 29px;
+        color: #7dd3fc;
+        text-shadow: 0 0 15px rgba(56, 189, 248, .5);
+    }
+
+    .create-organization h1 {
+        text-align: center;
+        margin-bottom: 12px;
+    }
+
+    .create-organization .description {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .create-organization .form-group {
+        margin-bottom: 25px;
+    }
+
+    .create-organization input {
+        min-height: 51px;
+    }
+
+    .field-hint {
+        display: block;
+        margin-top: 9px;
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.9;
+    }
+
+    .create-organization .btn {
+        min-height: 52px;
+        font-size: 14px;
+    }
+
+    .create-organization .btn span {
+        font-size: 17px;
+    }
+
+    .create-organization .back-link {
+        margin-top: 25px;
+    }
+
+    @media (max-width: 480px) {
+        .form-icon {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 18px;
+        }
+
+        .create-organization .description {
+            font-size: 12px;
+        }
+    }
+</style>
+
+{% endblock %}

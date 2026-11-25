@@ -1,0 +1,1411 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070817">
+
+    <title>{% block title %}SmartFinance AI{% endblock %}</title>
+
+    <style>
+        :root {
+            color-scheme: dark;
+
+            --bg: #070817;
+            --bg-soft: #10132b;
+            --panel: rgba(20, 25, 55, 0.72);
+            --panel-hover: rgba(35, 42, 83, 0.86);
+
+            --border: rgba(151, 139, 255, 0.19);
+            --border-hover: rgba(152, 117, 255, 0.48);
+
+            --purple: #9875ff;
+            --purple-light: #b79aff;
+            --cyan: #43dcff;
+            --green: #40e6b2;
+            --red: #ff6685;
+            --orange: #ffbd69;
+
+            --text: #f4f3ff;
+            --muted: #a5a7c5;
+
+            --shadow: 0 18px 55px rgba(0, 0, 0, 0.32);
+            --glow: 0 0 25px rgba(126, 91, 255, 0.12);
+
+            --radius: 20px;
+            --transition: 0.25s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-color: #6852b7 #090b20;
+            scrollbar-width: thin;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Tahoma, Arial, sans-serif;
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    ellipse at 12% 15%,
+                    rgba(93, 48, 190, 0.23),
+                    transparent 36%
+                ),
+                radial-gradient(
+                    ellipse at 88% 30%,
+                    rgba(0, 154, 255, 0.13),
+                    transparent 34%
+                ),
+                radial-gradient(
+                    ellipse at 50% 100%,
+                    rgba(112, 47, 196, 0.14),
+                    transparent 45%
+                ),
+                linear-gradient(
+                    135deg,
+                    #070817 0%,
+                    #0c1026 48%,
+                    #08091a 100%
+                );
+
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* Cosmic background */
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            opacity: 0.34;
+
+            background-image:
+                radial-gradient(2px 2px at 10% 20%, white 50%, transparent 100%),
+                radial-gradient(1px 1px at 30% 70%, white 50%, transparent 100%),
+                radial-gradient(2px 2px at 70% 15%, white 50%, transparent 100%),
+                radial-gradient(1px 1px at 85% 65%, white 50%, transparent 100%),
+                radial-gradient(1px 1px at 45% 40%, white 50%, transparent 100%),
+                radial-gradient(2px 2px at 92% 90%, white 50%, transparent 100%);
+
+            background-size: 350px 350px;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            width: 520px;
+            height: 520px;
+            top: 12%;
+            left: -240px;
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 50%;
+            background: rgba(114, 65, 255, 0.10);
+            filter: blur(110px);
+            animation: cosmicGlow 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes cosmicGlow {
+            from {
+                transform: translate(0, 0) scale(0.9);
+                opacity: 0.5;
+            }
+
+            to {
+                transform: translate(90px, 60px) scale(1.2);
+                opacity: 0.9;
+            }
+        }
+
+        /* General elements */
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button:disabled,
+        input:disabled,
+        select:disabled,
+        textarea:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            filter: brightness(1.12);
+        }
+
+        a:hover {
+            color: var(--cyan);
+        }
+
+        ::selection {
+            color: white;
+            background: rgba(126, 91, 255, 0.55);
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 3px;
+        }
+
+        /* Header */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
+
+            padding: 17px 7%;
+
+            background: rgba(8, 10, 29, 0.82);
+            border-bottom: 1px solid var(--border);
+
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+
+            box-shadow: 0 8px 35px rgba(0, 0, 0, 0.17);
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+
+            color: #fff;
+            text-shadow: 0 0 18px rgba(152, 117, 255, 0.55);
+        }
+
+        .logo::before {
+            content: "✦";
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 39px;
+            height: 39px;
+
+            border-radius: 13px;
+
+            color: white;
+            font-size: 22px;
+
+            background: linear-gradient(135deg, #8054ed, #28bce8);
+
+            box-shadow:
+                0 0 20px rgba(125, 91, 255, 0.45),
+                inset 0 1px 3px rgba(255, 255, 255, 0.4);
+        }
+
+        .header-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            padding: 11px 19px;
+
+            color: #c8bcff;
+            background: rgba(126, 91, 255, 0.12);
+
+            border: 1px solid rgba(152, 117, 255, 0.28);
+            border-radius: 12px;
+
+            font-size: 13px;
+            transition: 0.3s ease;
+        }
+
+        .header-link:hover {
+            color: white;
+            background: rgba(126, 91, 255, 0.25);
+            border-color: var(--purple);
+
+            box-shadow: 0 0 22px rgba(126, 91, 255, 0.2);
+
+            transform: translateY(-2px);
+        }
+
+        /* Main content */
+
+        main {
+            width: min(1180px, 92%);
+            min-height: 70vh;
+
+            margin: 38px auto;
+            padding: 26px;
+
+            position: relative;
+            isolation: isolate;
+        }
+
+        main > * {
+            position: relative;
+        }
+
+        /* Glass cards */
+
+        .card,
+        .stat-card,
+        .dashboard-card,
+        .glass-card,
+        .panel {
+            background: var(--panel);
+
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            transition:
+                transform 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .card:hover,
+        .stat-card:hover,
+        .dashboard-card:hover,
+        .glass-card:hover,
+        .panel:hover {
+            border-color: var(--border-hover);
+
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.35),
+                var(--glow);
+
+            transform: translateY(-3px);
+        }
+
+        /* Buttons */
+
+        button,
+        .btn,
+        input[type="submit"],
+        input[type="button"] {
+            transition:
+                transform 0.25s ease,
+                filter 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        button:hover:not(:disabled),
+        .btn:hover,
+        input[type="submit"]:hover,
+        input[type="button"]:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        /* Common button styles */
+
+        .btn-primary,
+        .button-primary {
+            color: white;
+            background: linear-gradient(135deg, #8054ed, #258edb);
+            border: 1px solid rgba(183, 154, 255, 0.35);
+
+            box-shadow: 0 8px 25px rgba(111, 77, 220, 0.25);
+        }
+
+        .btn-secondary,
+        .button-secondary {
+            color: var(--purple-light);
+            background: rgba(126, 91, 255, 0.13);
+            border: 1px solid var(--border);
+        }
+
+        .btn-success,
+        .button-success {
+            color: #061c19;
+            background: linear-gradient(135deg, #40e6b2, #27bfa5);
+            border: 0;
+        }
+
+        .btn-danger,
+        .button-danger {
+            color: white;
+            background: linear-gradient(135deg, #f05d83, #c93667);
+            border: 0;
+        }
+
+        /* Headings */
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: var(--text);
+        }
+
+        h1,
+        h2 {
+            text-shadow: 0 0 20px rgba(152, 117, 255, 0.13);
+        }
+
+        /* Inputs */
+
+        input,
+        select,
+        textarea {
+            max-width: 100%;
+            color: var(--text);
+
+            background: rgba(9, 13, 35, 0.82);
+
+            border: 1px solid rgba(151, 139, 255, 0.25);
+            border-radius: 11px;
+
+            outline: none;
+
+            transition: 0.25s ease;
+        }
+
+        input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+        select,
+        textarea {
+            padding: 11px 13px;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #8588aa;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--purple);
+
+            box-shadow:
+                0 0 0 3px rgba(152, 117, 255, 0.12),
+                0 0 18px rgba(126, 91, 255, 0.08);
+        }
+
+        select option {
+            color: var(--text);
+            background: #10132b;
+        }
+
+        input[type="checkbox"],
+        input[type="radio"] {
+            accent-color: var(--purple);
+        }
+
+        input[type="submit"],
+        input[type="button"] {
+            cursor: pointer;
+        }
+
+        /* Form labels */
+
+        label {
+            color: #d8d4f5;
+        }
+
+        form p {
+            margin-bottom: 17px;
+        }
+
+        form p label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        /* Tables */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--text);
+        }
+
+        th {
+            color: var(--purple-light);
+            background: rgba(126, 91, 255, 0.12);
+            font-weight: bold;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border-bottom: 1px solid rgba(151, 139, 255, 0.12);
+            text-align: right;
+        }
+
+        tr {
+            transition: background 0.2s ease;
+        }
+
+        tr:hover td {
+            background: rgba(126, 91, 255, 0.06);
+        }
+
+        /* Messages */
+
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 22px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .messages li,
+        .alert {
+            padding: 14px 17px;
+            border-radius: 13px;
+            border: 1px solid var(--border);
+            background: rgba(20, 25, 55, 0.82);
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .messages .success,
+        .alert-success {
+            border-color: rgba(64, 230, 178, 0.35);
+            background: rgba(64, 230, 178, 0.09);
+            color: var(--green);
+        }
+
+        .messages .error,
+        .alert-error,
+        .alert-danger {
+            border-color: rgba(255, 102, 133, 0.35);
+            background: rgba(255, 102, 133, 0.09);
+            color: var(--red);
+        }
+
+        .messages .warning,
+        .alert-warning {
+            border-color: rgba(255, 189, 105, 0.35);
+            background: rgba(255, 189, 105, 0.09);
+            color: var(--orange);
+        }
+
+        .messages .info,
+        .alert-info {
+            border-color: rgba(67, 220, 255, 0.35);
+            background: rgba(67, 220, 255, 0.08);
+            color: var(--cyan);
+        }
+
+        /* Status badges */
+
+        .badge,
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+
+            padding: 5px 11px;
+
+            border-radius: 30px;
+            border: 1px solid var(--border);
+
+            background: rgba(126, 91, 255, 0.12);
+            color: var(--purple-light);
+
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .badge-success {
+            color: var(--green);
+            border-color: rgba(64, 230, 178, 0.3);
+            background: rgba(64, 230, 178, 0.08);
+        }
+
+        .badge-danger {
+            color: var(--red);
+            border-color: rgba(255, 102, 133, 0.3);
+            background: rgba(255, 102, 133, 0.08);
+        }
+
+        .badge-warning {
+            color: var(--orange);
+            border-color: rgba(255, 189, 105, 0.3);
+            background: rgba(255, 189, 105, 0.08);
+        }
+
+        /* Dividers */
+
+        hr {
+            border: 0;
+            height: 1px;
+            margin: 22px 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(152, 117, 255, 0.4),
+                transparent
+            );
+        }
+
+        /* Links */
+
+        a:not(.logo):not(.header-link):hover {
+            text-shadow: 0 0 12px rgba(67, 220, 255, 0.2);
+        }
+
+        /* Footer */
+
+        footer {
+            margin-top: 55px;
+            padding: 25px 15px;
+
+            text-align: center;
+            color: var(--muted);
+
+            background: rgba(8, 10, 29, 0.5);
+            border-top: 1px solid var(--border);
+
+            font-size: 13px;
+        }
+
+        /* Scrollbar */
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #090b20;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #8054ed, #258edb);
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a18aff;
+        }
+
+        /* Persian Datepicker */
+
+        .jalali-picker-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 100%;
+            vertical-align: middle;
+        }
+
+        .jalali-calendar {
+            position: absolute;
+            z-index: 99999;
+            top: calc(100% + 8px);
+            right: 0;
+
+            width: 290px;
+            max-width: calc(100vw - 32px);
+
+            padding: 14px;
+
+            background: rgba(17, 21, 49, 0.97);
+            border: 1px solid rgba(152, 117, 255, 0.35);
+            border-radius: 16px;
+
+            box-shadow:
+                0 18px 55px rgba(0, 0, 0, 0.55),
+                0 0 25px rgba(126, 91, 255, 0.14);
+
+            color: var(--text);
+            direction: rtl;
+
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .jalali-calendar[hidden] {
+            display: none !important;
+        }
+
+        .jalali-calendar .jalali-calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            margin-bottom: 14px;
+        }
+
+        .jalali-calendar .jalali-calendar-title {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--cyan);
+        }
+
+        .jalali-calendar .jalali-calendar-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex: 0 0 32px;
+            width: 32px !important;
+            min-width: 32px !important;
+            max-width: 32px !important;
+            height: 32px !important;
+
+            padding: 0 !important;
+            margin: 0 !important;
+
+            border: 0;
+            border-radius: 8px;
+
+            background: rgba(126, 91, 255, 0.2);
+            color: white;
+
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .jalali-calendar .jalali-calendar-nav:hover {
+            background: #7957e8;
+        }
+
+        .jalali-calendar .jalali-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
+
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+
+            text-align: center;
+        }
+
+        .jalali-calendar .jalali-calendar-weekday {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 0;
+            width: 100%;
+
+            padding: 7px 0;
+
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .jalali-calendar .jalali-calendar-day {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+
+            height: 34px !important;
+            min-height: 34px;
+
+            padding: 0 !important;
+            margin: 0 !important;
+
+            border: 0;
+            border-radius: 8px;
+
+            background: transparent;
+            color: #e2e8f0;
+
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 1;
+        }
+
+        .jalali-calendar .jalali-calendar-day:hover {
+            background: rgba(126, 91, 255, 0.25);
+        }
+
+        .jalali-calendar .jalali-calendar-day.today {
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+        }
+
+        .jalali-calendar .jalali-calendar-day.selected {
+            background: linear-gradient(135deg, #8054ed, #258edb);
+            color: white;
+        }
+
+        .jalali-calendar .jalali-calendar-day.empty {
+            cursor: default;
+            pointer-events: none;
+            background: transparent;
+        }
+
+        .jalali-calendar .jalali-calendar-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+
+            width: 100%;
+            margin-top: 12px;
+            padding-top: 10px;
+
+            border-top: 1px solid var(--border);
+        }
+
+        .jalali-calendar .jalali-calendar-footer button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: auto !important;
+            min-width: 55px !important;
+            max-width: none !important;
+            min-height: 30px;
+
+            padding: 7px 12px !important;
+            margin: 0 !important;
+
+            border: 0;
+            border-radius: 7px;
+
+            background: transparent;
+            color: var(--cyan);
+
+            font-size: 12px;
+        }
+
+        .jalali-calendar .jalali-calendar-footer button:hover {
+            background: rgba(126, 91, 255, 0.18);
+        }
+
+        /* Jalali DateTime Picker */
+
+        .jalali-time-panel {
+            margin-top: 12px;
+            padding: 12px 8px;
+
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .jalali-time-title {
+            display: block;
+            margin-bottom: 10px;
+
+            color: var(--cyan);
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .jalali-time-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .jalali-time-controls select {
+            width: 85px;
+            padding: 8px;
+
+            border: 1px solid var(--border);
+            border-radius: 8px;
+
+            background: #0d1028;
+            color: var(--text);
+
+            font-size: 13px;
+            direction: ltr;
+        }
+
+        .jalali-time-controls span {
+            color: var(--cyan);
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 5%;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            main {
+                width: 96%;
+                margin: 22px auto;
+                padding: 12px;
+            }
+
+            .card,
+            .stat-card,
+            .dashboard-card,
+            .glass-card,
+            .panel {
+                border-radius: 15px;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            .table-responsive {
+                width: 100%;
+                overflow-x: auto;
+                border-radius: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                gap: 12px;
+            }
+
+            .header-link {
+                padding: 9px 12px;
+                font-size: 12px;
+            }
+
+            main {
+                padding: 8px;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+        }
+
+        /* Accessibility */
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+<header>
+    <a href="{% url 'home' %}" class="logo">
+        SmartFinance AI
+    </a>
+
+    <a href="{% url 'accounts:organization_list' %}" class="header-link">
+        ✦ سازمان‌های من
+    </a>
+</header>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer>
+    SmartFinance AI — مدیریت هوشمند امور مالی
+
+    <br>
+
+    <span style="display:inline-block;margin-top:8px;color:#817ba9;">
+        Powered by Intelligence · Designed for the Future
+    </span>
+</footer>
+
+<script>
+(function () {
+
+    "use strict";
+
+    const formatter = new Intl.DateTimeFormat(
+        "en-US-u-ca-persian-nu-latn",
+        {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric"
+        }
+    );
+
+    const monthFormatter = new Intl.DateTimeFormat(
+        "fa-IR-u-ca-persian",
+        {
+            month: "long",
+            calendar: "persian"
+        }
+    );
+
+    const weekdays = [
+        "ش", "ی", "د", "س", "چ", "پ", "ج"
+    ];
+
+    function getJalaliParts(date) {
+        const parts = formatter.formatToParts(date);
+        const result = {};
+
+        parts.forEach(function (part) {
+            if (part.type !== "literal") {
+                result[part.type] = Number(part.value);
+            }
+        });
+
+        return {
+            year: result.year,
+            month: result.month,
+            day: result.day
+        };
+    }
+
+    function pad(number) {
+        return String(number).padStart(2, "0");
+    }
+
+    function formatJalali(year, month, day) {
+        return year + "/" + pad(month) + "/" + pad(day);
+    }
+
+    function getGregorianDates(year, month) {
+        const dates = [];
+
+        const start = new Date(year + 621, 0, 1, 12);
+        const end = new Date(year + 623, 0, 1, 12);
+
+        for (
+            let date = new Date(start);
+            date < end;
+            date.setDate(date.getDate() + 1)
+        ) {
+            const parts = getJalaliParts(date);
+
+            if (parts.year === year && parts.month === month) {
+                dates.push({
+                    day: parts.day,
+                    date: new Date(date)
+                });
+            }
+        }
+
+        return dates;
+    }
+
+    function parseInputDate(value) {
+        const match = value.match(
+            /^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/
+        );
+
+        if (!match) return null;
+
+        return {
+            year: Number(match[1]),
+            month: Number(match[2]),
+            day: Number(match[3])
+        };
+    }
+
+    function initPicker(input) {
+        if (input.dataset.jalaliInitialized) return;
+
+        input.dataset.jalaliInitialized = "true";
+
+        const isDateTime = input.classList.contains(
+            "jalali-datetime-input"
+        );
+
+        const wrapper = document.createElement("span");
+        wrapper.className = "jalali-picker-wrapper";
+
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        const calendar = document.createElement("div");
+        calendar.className = "jalali-calendar";
+        calendar.hidden = true;
+
+        wrapper.appendChild(calendar);
+
+        const today = getJalaliParts(new Date());
+
+        let currentYear = today.year;
+        let currentMonth = today.month;
+
+        let selectedHour = pad(new Date().getHours());
+        let selectedMinute = pad(new Date().getMinutes());
+
+        function dispatchInputEvents() {
+            input.dispatchEvent(
+                new Event("input", { bubbles: true })
+            );
+
+            input.dispatchEvent(
+                new Event("change", { bubbles: true })
+            );
+        }
+
+        function getTimeValue() {
+            return selectedHour + ":" + selectedMinute;
+        }
+
+        function renderCalendar() {
+            const dates = getGregorianDates(
+                currentYear,
+                currentMonth
+            );
+
+            if (!dates.length) return;
+
+            const selected = parseInputDate(
+                input.value.trim().split(/\s+/)[0]
+            );
+
+            const firstDay = dates[0].date.getDay();
+            const offset = (firstDay + 1) % 7;
+
+            const monthName = monthFormatter.format(dates[0].date);
+
+            calendar.innerHTML = "";
+
+            const header = document.createElement("div");
+            header.className = "jalali-calendar-header";
+
+            const previous = document.createElement("button");
+            previous.type = "button";
+            previous.className = "jalali-calendar-nav";
+            previous.textContent = "›";
+            previous.setAttribute("aria-label", "ماه قبل");
+
+            previous.addEventListener("click", function () {
+                currentMonth--;
+
+                if (currentMonth < 1) {
+                    currentMonth = 12;
+                    currentYear--;
+                }
+
+                renderCalendar();
+            });
+
+            const title = document.createElement("span");
+            title.className = "jalali-calendar-title";
+            title.textContent = monthName + " " + currentYear;
+
+            const next = document.createElement("button");
+            next.type = "button";
+            next.className = "jalali-calendar-nav";
+            next.textContent = "‹";
+            next.setAttribute("aria-label", "ماه بعد");
+
+            next.addEventListener("click", function () {
+                currentMonth++;
+
+                if (currentMonth > 12) {
+                    currentMonth = 1;
+                    currentYear++;
+                }
+
+                renderCalendar();
+            });
+
+            header.appendChild(previous);
+            header.appendChild(title);
+            header.appendChild(next);
+
+            calendar.appendChild(header);
+
+            const grid = document.createElement("div");
+            grid.className = "jalali-calendar-grid";
+
+            weekdays.forEach(function (day) {
+                const cell = document.createElement("div");
+                cell.className = "jalali-calendar-weekday";
+                cell.textContent = day;
+
+                grid.appendChild(cell);
+            });
+
+            for (let i = 0; i < offset; i++) {
+                const empty = document.createElement("div");
+                empty.className = "jalali-calendar-day empty";
+
+                grid.appendChild(empty);
+            }
+
+            dates.forEach(function (item) {
+                const button = document.createElement("button");
+
+                button.type = "button";
+                button.className = "jalali-calendar-day";
+                button.textContent = item.day;
+
+                const isToday =
+                    currentYear === today.year &&
+                    currentMonth === today.month &&
+                    item.day === today.day;
+
+                const isSelected =
+                    selected &&
+                    selected.year === currentYear &&
+                    selected.month === currentMonth &&
+                    selected.day === item.day;
+
+                if (isToday) button.classList.add("today");
+                if (isSelected) button.classList.add("selected");
+
+                button.addEventListener("click", function () {
+                    const jalaliDate = formatJalali(
+                        currentYear,
+                        currentMonth,
+                        item.day
+                    );
+
+                    input.value = jalaliDate;
+
+                    if (isDateTime) {
+                        input.value += " " + getTimeValue();
+                    }
+
+                    dispatchInputEvents();
+
+                    if (!isDateTime) {
+                        calendar.hidden = true;
+                    } else {
+                        renderCalendar();
+                    }
+                });
+
+                grid.appendChild(button);
+            });
+
+            calendar.appendChild(grid);
+
+            if (isDateTime) {
+                const timePanel = document.createElement("div");
+                timePanel.className = "jalali-time-panel";
+
+                const timeTitle = document.createElement("span");
+                timeTitle.className = "jalali-time-title";
+                timeTitle.textContent = "انتخاب ساعت و دقیقه";
+
+                const controls = document.createElement("div");
+                controls.className = "jalali-time-controls";
+
+                const hourSelect = document.createElement("select");
+                hourSelect.setAttribute("aria-label", "ساعت");
+
+                for (let hour = 0; hour < 24; hour++) {
+                    const option = document.createElement("option");
+
+                    option.value = pad(hour);
+                    option.textContent = pad(hour);
+
+                    hourSelect.appendChild(option);
+                }
+
+                hourSelect.value = selectedHour;
+
+                const separator = document.createElement("span");
+                separator.textContent = ":";
+
+                const minuteSelect = document.createElement("select");
+                minuteSelect.setAttribute("aria-label", "دقیقه");
+
+                for (let minute = 0; minute < 60; minute++) {
+                    const option = document.createElement("option");
+
+                    option.value = pad(minute);
+                    option.textContent = pad(minute);
+
+                    minuteSelect.appendChild(option);
+                }
+
+                minuteSelect.value = selectedMinute;
+
+                function updateTime() {
+                    selectedHour = hourSelect.value;
+                    selectedMinute = minuteSelect.value;
+
+                    const currentDate = parseInputDate(
+                        input.value.trim().split(/\s+/)[0]
+                    );
+
+                    if (currentDate) {
+                        input.value =
+                            formatJalali(
+                                currentDate.year,
+                                currentDate.month,
+                                currentDate.day
+                            ) + " " + getTimeValue();
+
+                        dispatchInputEvents();
+                    }
+                }
+
+                hourSelect.addEventListener("change", updateTime);
+                minuteSelect.addEventListener("change", updateTime);
+
+                controls.appendChild(hourSelect);
+                controls.appendChild(separator);
+                controls.appendChild(minuteSelect);
+
+                timePanel.appendChild(timeTitle);
+                timePanel.appendChild(controls);
+
+                calendar.appendChild(timePanel);
+            }
+
+            const footer = document.createElement("div");
+            footer.className = "jalali-calendar-footer";
+
+            const todayButton = document.createElement("button");
+            todayButton.type = "button";
+            todayButton.textContent = "امروز";
+
+            todayButton.addEventListener("click", function () {
+                currentYear = today.year;
+                currentMonth = today.month;
+
+                renderCalendar();
+            });
+
+            const closeButton = document.createElement("button");
+            closeButton.type = "button";
+            closeButton.textContent = "تأیید و بستن";
+
+            closeButton.addEventListener("click", function () {
+                calendar.hidden = true;
+            });
+
+            footer.appendChild(todayButton);
+            footer.appendChild(closeButton);
+
+            calendar.appendChild(footer);
+        }
+
+        function openCalendar() {
+            const selected = parseInputDate(
+                input.value.trim().split(/\s+/)[0]
+            );
+
+            if (selected) {
+                currentYear = selected.year;
+                currentMonth = selected.month;
+            } else {
+                currentYear = today.year;
+                currentMonth = today.month;
+            }
+
+            if (isDateTime) {
+                const timeMatch = input.value.match(
+                    /(?:\s|T)(\d{1,2}):(\d{2})$/
+                );
+
+                if (timeMatch) {
+                    selectedHour = pad(Number(timeMatch[1]));
+                    selectedMinute = pad(Number(timeMatch[2]));
+                } else {
+                    const now = new Date();
+
+                    selectedHour = pad(now.getHours());
+                    selectedMinute = pad(now.getMinutes());
+                }
+            }
+
+            renderCalendar();
+            calendar.hidden = false;
+        }
+
+        input.addEventListener("click", openCalendar);
+        input.addEventListener("focus", openCalendar);
+
+        input.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                calendar.hidden = true;
+            }
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!wrapper.contains(event.target)) {
+                calendar.hidden = true;
+            }
+        });
+    }
+
+    function start() {
+        const inputs = document.querySelectorAll(
+            ".jalali-date-input, .jalali-datetime-input"
+        );
+
+        inputs.forEach(initPicker);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start);
+    } else {
+        start();
+    }
+
+})();
+</script>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

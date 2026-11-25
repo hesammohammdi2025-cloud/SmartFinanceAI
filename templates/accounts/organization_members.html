@@ -1,0 +1,502 @@
+
+{% extends "accounts/base_accounts.html" %}
+
+{% block title %}مدیریت اعضای سازمان{% endblock %}
+
+{% block content %}
+
+<div class="members-page">
+
+    <div class="page-icon">
+        <span>♙</span>
+    </div>
+
+    <h1>مدیریت اعضای سازمان</h1>
+
+    <p class="description">
+        مدیریت اعضای سازمان
+        <strong>{{ organization.name }}</strong>
+        و تعیین سطح دسترسی هر عضو
+    </p>
+
+
+    {% if memberships %}
+
+        <div class="members-summary">
+            <span class="summary-dot"></span>
+            تعداد اعضای ثبت‌شده:
+            <strong>{{ memberships|length }}</strong>
+        </div>
+
+        {% for membership in memberships %}
+
+            <section class="member-card">
+
+                <div class="member-header">
+
+                    <div class="member-avatar">
+                        {{ membership.user.get_full_name|default:membership.user.username|first|upper }}
+                    </div>
+
+                    <div class="member-info">
+
+                        <h3>
+                            {{ membership.user.get_full_name|default:membership.user.email }}
+                        </h3>
+
+                        <p class="member-email" dir="ltr">
+                            {{ membership.user.email }}
+                        </p>
+
+                        {% if is_admin or is_owner or is_manager %}
+
+                            <div class="username-info">
+                                <span>نام کاربری:</span>
+
+                                <strong dir="ltr">
+                                    {{ membership.user.username }}
+                                </strong>
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="member-role">
+                        <span class="role-label">نقش فعلی</span>
+
+                        <span class="role-badge">
+                            {{ membership.get_role_display|default:membership.role }}
+                        </span>
+                    </div>
+
+                </div>
+
+
+                {% if is_admin or is_owner %}
+
+                    {% if membership.user_id != organization.owner_id %}
+
+                        <div class="member-management">
+
+                            <div class="management-title">
+                                <span>⚙</span>
+                                مدیریت دسترسی عضو
+                            </div>
+
+                            <form
+                                method="POST"
+                                action="{% url 'accounts:organization_member_update_role' organization.id membership.id %}"
+                                class="role-form"
+                            >
+                                {% csrf_token %}
+
+                                <div class="form-group">
+
+                                    <label>
+                                        تغییر نقش عضو
+                                    </label>
+
+                                    <select name="role" required>
+
+                                        <option
+                                            value="manager"
+                                            {% if membership.role == "manager" %}selected{% endif %}
+                                        >
+                                            مدیر
+                                        </option>
+
+                                        <option
+                                            value="accountant"
+                                            {% if membership.role == "accountant" %}selected{% endif %}
+                                        >
+                                            حسابدار
+                                        </option>
+
+                                        <option
+                                            value="viewer"
+                                            {% if membership.role == "viewer" %}selected{% endif %}
+                                        >
+                                            مشاهده‌گر
+                                        </option>
+
+                                        <option
+                                            value="employee"
+                                            {% if membership.role == "employee" %}selected{% endif %}
+                                        >
+                                            کارمند ساده
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                                <button type="submit" class="btn update-btn">
+                                    ذخیره تغییرات نقش
+                                </button>
+
+                            </form>
+
+
+                            <div class="management-divider"></div>
+
+
+                            <form
+                                method="POST"
+                                action="{% url 'accounts:organization_member_remove' organization.id membership.id %}"
+                                onsubmit="return confirm('آیا از حذف این عضو مطمئن هستید؟');"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn remove-btn"
+                                >
+                                    حذف عضو از سازمان
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="owner-notice">
+                            <span>★</span>
+                            این عضو مالک اصلی سازمان است و امکان تغییر نقش یا حذف او وجود ندارد.
+                        </div>
+
+                    {% endif %}
+
+                {% endif %}
+
+            </section>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">♙</div>
+
+            <h3>هنوز عضوی ثبت نشده است</h3>
+
+            <p>
+                در حال حاضر هیچ عضوی در این سازمان وجود ندارد.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <a
+        href="{% url 'accounts:organization_list' %}"
+        class="back-link"
+    >
+        ← بازگشت به سازمان‌های من
+    </a>
+
+</div>
+
+
+<style>
+    .members-page {
+        width: 100%;
+    }
+
+    .page-icon {
+        width: 62px;
+        height: 62px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 19px;
+        background: linear-gradient(
+            135deg,
+            rgba(56,189,248,.18),
+            rgba(129,140,248,.18)
+        );
+        border: 1px solid rgba(56,189,248,.3);
+        box-shadow: 0 0 30px rgba(56,189,248,.1);
+    }
+
+    .page-icon span {
+        font-size: 30px;
+        color: #7dd3fc;
+    }
+
+    .members-page > h1 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .members-page > .description {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .members-page > .description strong {
+        color: #7dd3fc;
+    }
+
+    .members-summary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 13px 15px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+        background: rgba(56,189,248,.07);
+        border: 1px solid rgba(56,189,248,.17);
+        color: #cbd5e1;
+        font-size: 12px;
+    }
+
+    .members-summary strong {
+        color: #7dd3fc;
+    }
+
+    .summary-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #38bdf8;
+        box-shadow: 0 0 10px rgba(56,189,248,.6);
+    }
+
+    .member-card {
+        position: relative;
+        padding: 20px;
+        margin-bottom: 17px;
+        border-radius: 17px;
+        background: rgba(8,15,30,.55);
+        border: 1px solid rgba(148,163,184,.16);
+        transition: border-color .25s ease,
+                    transform .25s ease,
+                    box-shadow .25s ease;
+    }
+
+    .member-card:hover {
+        border-color: rgba(56,189,248,.3);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(0,0,0,.2);
+    }
+
+    .member-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        padding-bottom: 17px;
+        border-bottom: 1px solid rgba(148,163,184,.12);
+    }
+
+    .member-avatar {
+        width: 49px;
+        height: 49px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 15px;
+        background: linear-gradient(135deg,#0284c7,#6366f1);
+        color: white;
+        font-size: 20px;
+        font-weight: 900;
+        box-shadow: 0 5px 18px rgba(37,99,235,.22);
+    }
+
+    .member-info {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .member-info h3 {
+        color: #f1f5f9;
+        font-size: 14px;
+        margin: 0 0 7px;
+        line-height: 1.8;
+    }
+
+    .member-email {
+        color: #94a3b8;
+        font-size: 11px;
+        margin: 0;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .username-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        align-items: center;
+        margin-top: 9px;
+        font-size: 11px;
+        color: #94a3b8;
+    }
+
+    .username-info strong {
+        color: #7dd3fc;
+    }
+
+    .member-role {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 7px;
+    }
+
+    .role-label {
+        color: #64748b;
+        font-size: 10px;
+    }
+
+    .role-badge {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 8px;
+        background: rgba(56,189,248,.11);
+        border: 1px solid rgba(56,189,248,.2);
+        color: #7dd3fc;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .member-management {
+        padding-top: 17px;
+    }
+
+    .management-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #cbd5e1;
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .management-title span {
+        color: #7dd3fc;
+        font-size: 17px;
+    }
+
+    .member-card .form-group {
+        margin-bottom: 13px;
+    }
+
+    .member-card label {
+        font-size: 12px;
+    }
+
+    .member-card select {
+        min-height: 47px;
+    }
+
+    .member-card .btn {
+        min-height: 44px;
+        font-size: 12px;
+    }
+
+    .update-btn {
+        background: linear-gradient(110deg,#0284c7,#4f46e5);
+    }
+
+    .remove-btn {
+        background: linear-gradient(110deg,#991b1b,#e11d48);
+        border-color: rgba(251,113,133,.25);
+        box-shadow: 0 6px 18px rgba(225,29,72,.12);
+    }
+
+    .remove-btn:hover {
+        box-shadow: 0 9px 22px rgba(225,29,72,.22);
+    }
+
+    .management-divider {
+        height: 1px;
+        background: rgba(148,163,184,.12);
+        margin: 18px 0;
+    }
+
+    .owner-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 10px;
+        background: rgba(245,158,11,.08);
+        border: 1px solid rgba(245,158,11,.2);
+        color: #fcd34d;
+        font-size: 11px;
+        line-height: 1.9;
+    }
+
+    .owner-notice span {
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+
+    .empty-state {
+        padding: 35px 15px;
+        text-align: center;
+        border-radius: 15px;
+        border: 1px dashed rgba(148,163,184,.22);
+        background: rgba(30,41,59,.3);
+    }
+
+    .empty-icon {
+        font-size: 34px;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+        color: #e2e8f0;
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+
+    .empty-state p {
+        color: #94a3b8;
+        font-size: 12px;
+        line-height: 1.9;
+    }
+
+    .members-page > .back-link {
+        margin-top: 25px;
+    }
+
+    @media (max-width: 480px) {
+        .page-icon {
+            width: 55px;
+            height: 55px;
+        }
+
+        .member-card {
+            padding: 15px;
+        }
+
+        .member-header {
+            gap: 11px;
+        }
+
+        .member-role {
+            width: 100%;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 5px;
+        }
+
+        .member-card .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+{% endblock %}

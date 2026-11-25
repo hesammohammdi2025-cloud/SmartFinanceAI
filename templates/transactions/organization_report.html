@@ -1,0 +1,623 @@
+
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}
+گزارش مالی سازمان | SmartFinance AI
+{% endblock %}
+
+{% block extra_css %}
+
+.org-report-page {
+    width: min(100% - 32px, 1250px);
+    margin: 35px auto 50px;
+    color: #e2e8f0;
+    animation: reportFade .5s ease both;
+}
+
+.org-report-header {
+    padding: 28px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(56, 189, 248, .2);
+    border-radius: 22px;
+    background: linear-gradient(120deg, rgba(30, 41, 59, .96), rgba(49, 46, 129, .3));
+}
+
+.org-report-header h1 {
+    margin: 0 0 12px;
+    color: #7dd3fc;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.org-report-header h2 {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.org-report-header p {
+    margin: 12px 0 0;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.org-report-error {
+    margin-bottom: 20px;
+    padding: 14px 17px;
+    border: 1px solid rgba(248, 113, 113, .3);
+    border-radius: 12px;
+    background: rgba(239, 68, 68, .08);
+    color: #fca5a5;
+    font-size: 13px;
+}
+
+.org-report-section {
+    padding: 24px;
+    margin-bottom: 23px;
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(30, 41, 59, .92), rgba(15, 23, 42, .95));
+    box-shadow: 0 15px 40px rgba(0, 0, 0, .16);
+}
+
+.org-report-section h3 {
+    margin: 0 0 20px;
+    color: #7dd3fc;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.org-report-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 16px;
+}
+
+.org-report-field {
+    flex: 1 1 190px;
+}
+
+.org-report-field label {
+    display: block;
+    margin-bottom: 9px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.org-report-field input,
+.org-report-field select {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid rgba(56, 189, 248, .22);
+    border-radius: 10px;
+    outline: none;
+    background: rgba(15, 23, 42, .85);
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 13px;
+    transition: .2s ease;
+}
+
+.org-report-field input:focus,
+.org-report-field select:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, .1);
+}
+
+.org-report-field select option {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
+.org-report-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 11px 19px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.org-report-btn:hover {
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+.org-filter-btn {
+    background: linear-gradient(120deg, #0369a1, #0ea5e9);
+}
+
+.org-reset-btn {
+    background: linear-gradient(120deg, #334155, #475569);
+}
+
+.org-excel-btn {
+    background: linear-gradient(120deg, #15803d, #22c55e);
+}
+
+.org-dashboard-btn {
+    background: linear-gradient(120deg, #0f766e, #14b8a6);
+}
+
+.org-report-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 17px;
+    margin-bottom: 23px;
+}
+
+.org-report-stat {
+    position: relative;
+    overflow: hidden;
+    padding: 23px;
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(30, 41, 59, .95), rgba(15, 23, 42, .95));
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .14);
+    transition: .25s ease;
+}
+
+.org-report-stat:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, .3);
+}
+
+.org-report-stat h4 {
+    margin: 0 0 14px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.org-report-stat h2 {
+    margin: 0;
+    color: #f1f5f9;
+    font-size: clamp(20px, 3vw, 27px);
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.org-report-stat.income-stat h4 {
+    color: #4ade80;
+}
+
+.org-report-stat.expense-stat h4 {
+    color: #f87171;
+}
+
+.org-report-stat.balance-stat h4 {
+    color: #38bdf8;
+}
+
+.org-report-stat.income-stat {
+    border-top: 3px solid #22c55e;
+}
+
+.org-report-stat.expense-stat {
+    border-top: 3px solid #ef4444;
+}
+
+.org-report-stat.balance-stat {
+    border-top: 3px solid #0ea5e9;
+}
+
+.org-report-download {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 23px;
+    padding: 20px 23px;
+    border: 1px solid rgba(34, 197, 94, .2);
+    border-radius: 16px;
+    background: linear-gradient(120deg, rgba(21, 128, 61, .12), rgba(30, 41, 59, .8));
+}
+
+.org-report-download p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.org-report-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid rgba(148, 163, 184, .13);
+    border-radius: 13px;
+}
+
+.org-report-table {
+    width: 100%;
+    min-width: 780px;
+    border-collapse: collapse;
+    text-align: right;
+}
+
+.org-report-table th {
+    padding: 15px 13px;
+    background: rgba(56, 189, 248, .08);
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.org-report-table td {
+    padding: 14px 13px;
+    border-bottom: 1px solid rgba(148, 163, 184, .12);
+    color: #cbd5e1;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.org-report-table tbody tr {
+    transition: background .2s ease;
+}
+
+.org-report-table tbody tr:hover {
+    background: rgba(56, 189, 248, .045);
+}
+
+.org-report-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.org-report-amount {
+    direction: ltr;
+    text-align: right;
+    font-weight: 700;
+}
+
+.org-report-income {
+    color: #4ade80 !important;
+    font-weight: 700;
+}
+
+.org-report-expense {
+    color: #f87171 !important;
+    font-weight: 700;
+}
+
+.org-report-empty {
+    padding: 35px 20px;
+    border: 1px dashed rgba(148, 163, 184, .25);
+    border-radius: 14px;
+    color: #94a3b8;
+    text-align: center;
+    line-height: 2;
+    font-size: 13px;
+}
+
+.org-report-footer {
+    margin-top: 25px;
+}
+
+.org-report-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.org-report-back:hover {
+    color: #fff;
+}
+
+@keyframes reportFade {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .org-report-page {
+        width: calc(100% - 22px);
+        margin-top: 20px;
+    }
+
+    .org-report-header {
+        padding: 22px 17px;
+    }
+
+    .org-report-header h1 {
+        font-size: 21px;
+    }
+
+    .org-report-section {
+        padding: 17px 13px;
+    }
+
+    .org-report-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .org-report-field {
+        width: 100%;
+        flex: auto;
+    }
+
+    .org-report-btn {
+        width: 100%;
+    }
+
+    .org-report-download {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .org-report-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .org-report-page {
+        animation: none;
+    }
+
+    .org-report-stat,
+    .org-report-btn,
+    .org-report-table tbody tr {
+        transition: none;
+    }
+}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="org-report-page" dir="rtl">
+
+    <div class="org-report-header">
+
+        <h1>📈 گزارش مالی سازمان</h1>
+
+        <h2>{{ organization.name }}</h2>
+
+        <p>
+            بررسی درآمدها، هزینه‌ها و وضعیت مالی سازمان
+        </p>
+
+    </div>
+
+    {% if error_message %}
+        <div class="org-report-error">
+            ⚠️ {{ error_message }}
+        </div>
+    {% endif %}
+
+    <!-- فیلتر گزارش -->
+
+    <div class="org-report-section">
+
+        <h3>🔎 فیلتر گزارش مالی</h3>
+
+        <form method="get">
+
+            <div class="org-report-filters">
+
+                <div class="org-report-field">
+                    <label for="start_date">از تاریخ شمسی:</label>
+
+                    <input
+                        type="text"
+                        id="start_date"
+                        name="start_date"
+                        value="{{ start_date }}"
+                        placeholder="1405/08/22"
+                        inputmode="numeric"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="org-report-field">
+                    <label for="end_date">تا تاریخ شمسی:</label>
+
+                    <input
+                        type="text"
+                        id="end_date"
+                        name="end_date"
+                        value="{{ end_date }}"
+                        placeholder="1405/08/30"
+                        inputmode="numeric"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="org-report-field">
+                    <label for="transaction_type">نوع تراکنش:</label>
+
+                    <select id="transaction_type" name="type">
+
+                        <option value="">همه تراکنش‌ها</option>
+
+                        <option value="income"
+                            {% if selected_type == 'income' %}selected{% endif %}>
+                            درآمد
+                        </option>
+
+                        <option value="expense"
+                            {% if selected_type == 'expense' %}selected{% endif %}>
+                            هزینه
+                        </option>
+
+                    </select>
+                </div>
+
+                <button type="submit" class="org-report-btn org-filter-btn">
+                    اعمال فیلتر
+                </button>
+
+                <a
+                    href="{% url 'organization_report' organization.id %}"
+                    class="org-report-btn org-reset-btn"
+                >
+                    حذف فیلترها
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- خلاصه مالی -->
+
+    <div class="org-report-stats">
+
+        <div class="org-report-stat income-stat">
+            <h4>💰 مجموع درآمد</h4>
+            <h2>{{ total_income|floatformat:2 }}</h2>
+        </div>
+
+        <div class="org-report-stat expense-stat">
+            <h4>💸 مجموع هزینه</h4>
+            <h2>{{ total_expenses|floatformat:2 }}</h2>
+        </div>
+
+        <div class="org-report-stat balance-stat">
+            <h4>📊 مانده خالص</h4>
+            <h2>{{ balance|floatformat:2 }}</h2>
+        </div>
+
+    </div>
+
+    <!-- دانلود Excel -->
+
+    <div class="org-report-download">
+
+        <p>
+            📁 دریافت خروجی Excel از تراکنش‌های نمایش‌داده‌شده
+        </p>
+
+        <a
+            href="{% url 'organization_report_excel' organization.id %}?{{ export_query }}"
+            class="org-report-btn org-excel-btn"
+        >
+            ⬇️ دانلود گزارش Excel
+        </a>
+
+    </div>
+
+    <!-- جدول گزارش -->
+
+    <div class="org-report-section">
+
+        <h3>🧾 لیست تراکنش‌ها</h3>
+
+        {% if transactions %}
+
+            <div class="org-report-table-wrapper">
+
+                <table class="org-report-table">
+
+                    <thead>
+                        <tr>
+                            <th>عنوان</th>
+                            <th>مبلغ</th>
+                            <th>نوع</th>
+                            <th>دسته‌بندی</th>
+                            <th>تاریخ</th>
+                            <th>ثبت‌کننده</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for transaction in transactions %}
+
+                            <tr>
+
+                                <td>
+                                    {{ transaction.title }}
+                                </td>
+
+                                <td class="org-report-amount" dir="ltr">
+                                    {{ transaction.amount|floatformat:2 }}
+                                </td>
+
+                                <td>
+
+                                    {% if transaction.transaction_type == 'income' %}
+                                        <span class="org-report-income">
+                                            درآمد
+                                        </span>
+                                    {% else %}
+                                        <span class="org-report-expense">
+                                            هزینه
+                                        </span>
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    {{ transaction.category }}
+                                </td>
+
+                                <td>
+                                    {{ transaction.date|jalali_date }}
+                                </td>
+
+                                <td>
+                                    {{ transaction.created_by.username }}
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="org-report-empty">
+                <div style="font-size:30px; margin-bottom:12px;">📭</div>
+
+                تراکنشی با فیلترهای انتخاب‌شده پیدا نشد.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <div class="org-report-footer">
+
+        <a
+            href="{% url 'organization_dashboard' organization.id %}"
+            class="org-report-back"
+        >
+            ← بازگشت به داشبورد سازمان
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

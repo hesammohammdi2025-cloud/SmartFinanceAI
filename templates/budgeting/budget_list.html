@@ -1,0 +1,553 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>بودجه‌های من | SmartFinance AI</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 35px 16px;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(37,99,235,.17), transparent 35%),
+                radial-gradient(circle at 85% 80%, rgba(124,58,237,.15), transparent 35%),
+                #080f1e;
+            color: #e2e8f0;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            margin: auto;
+            animation: fadeIn .65s ease both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 58px;
+            height: 58px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            background: linear-gradient(135deg,#0284c7,#6366f1);
+            box-shadow: 0 0 28px rgba(56,189,248,.2);
+            font-size: 25px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 23px;
+            background: linear-gradient(90deg,#7dd3fc,#a5b4fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            margin: 9px 0 0;
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 19px;
+            border: 1px solid rgba(125,211,252,.2);
+            border-radius: 11px;
+            background: linear-gradient(110deg,#0284c7,#4f46e5);
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 8px 23px rgba(37,99,235,.2);
+            transition: transform .25s ease,
+                        box-shadow .25s ease,
+                        filter .25s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 12px 28px rgba(37,99,235,.3);
+        }
+
+        .messages {
+            margin-bottom: 22px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(56,189,248,.2);
+            border-radius: 11px;
+            background: rgba(56,189,248,.07);
+            color: #bae6fd;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .budget-card {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 19px;
+            padding: 24px;
+            border: 1px solid rgba(148,163,184,.15);
+            border-radius: 19px;
+            background: rgba(15,23,42,.78);
+            box-shadow: 0 15px 40px rgba(0,0,0,.2);
+            backdrop-filter: blur(16px);
+            transition: transform .25s ease,
+                        border-color .25s ease;
+        }
+
+        .budget-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(56,189,248,.3);
+        }
+
+        .budget-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg,#38bdf8,#6366f1);
+        }
+
+        .budget-card h2 {
+            margin: 0 0 18px;
+            color: #f1f5f9;
+            font-size: 17px;
+        }
+
+        .budget-period {
+            display: inline-block;
+            padding: 7px 12px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(56,189,248,.17);
+            border-radius: 8px;
+            background: rgba(56,189,248,.07);
+            color: #7dd3fc;
+            font-size: 11px;
+        }
+
+        .numbers {
+            display: grid;
+            grid-template-columns: repeat(3,minmax(0,1fr));
+            gap: 12px;
+            margin: 0 0 20px;
+            line-height: 2;
+            overflow-wrap: anywhere;
+        }
+
+        .number-item {
+            padding: 13px;
+            border: 1px solid rgba(148,163,184,.1);
+            border-radius: 11px;
+            background: rgba(8,15,30,.55);
+        }
+
+        .number-label {
+            display: block;
+            margin-bottom: 7px;
+            color: #94a3b8;
+            font-size: 10px;
+        }
+
+        .number-value {
+            display: block;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .remaining-label {
+            color: #94a3b8;
+        }
+
+        .progress-section {
+            margin-top: 20px;
+        }
+
+        .progress-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+            font-size: 11px;
+        }
+
+        .percentage {
+            color: #7dd3fc;
+            font-weight: bold;
+            direction: ltr;
+        }
+
+        .progress {
+            height: 11px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: #273449;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,.2);
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg,#059669,#34d399);
+            transition: width .8s ease;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 11px;
+            line-height: 1.9;
+        }
+
+        .status::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .warning {
+            color: #fbbf24;
+            background: rgba(251,191,36,.08);
+            border: 1px solid rgba(251,191,36,.17);
+        }
+
+        .danger {
+            color: #f87171;
+            background: rgba(248,113,113,.08);
+            border: 1px solid rgba(248,113,113,.17);
+        }
+
+        .success {
+            color: #34d399;
+            background: rgba(52,211,153,.08);
+            border: 1px solid rgba(52,211,153,.17);
+        }
+
+        .empty-state {
+            padding: 45px 20px;
+            margin-top: 20px;
+            border: 1px dashed rgba(148,163,184,.25);
+            border-radius: 18px;
+            background: rgba(15,23,42,.55);
+            text-align: center;
+        }
+
+        .empty-icon {
+            margin-bottom: 15px;
+            font-size: 38px;
+        }
+
+        .empty-state p {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 2;
+        }
+
+        .footer-actions {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(148,163,184,.12);
+        }
+
+        .back-link {
+            color: #7dd3fc;
+            text-decoration: none;
+            font-size: 12px;
+            transition: color .2s ease;
+        }
+
+        .back-link:hover {
+            color: #bae6fd;
+        }
+
+        .footer {
+            margin-top: 25px;
+            color: #475569;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        @media (max-width: 650px) {
+            .page-header {
+                align-items: flex-start;
+            }
+
+            .page-header .button {
+                width: 100%;
+            }
+
+            .numbers {
+                grid-template-columns: 1fr;
+            }
+
+            .budget-card {
+                padding: 20px 16px;
+            }
+
+            h1 {
+                font-size: 19px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="page-header">
+
+        <div class="header-content">
+
+            <div class="header-icon">
+                💰
+            </div>
+
+            <div>
+                <h1>بودجه‌های ماهانه من</h1>
+
+                <p class="subtitle">
+                    مدیریت و بررسی میزان مصرف بودجه‌های مالی
+                </p>
+            </div>
+
+        </div>
+
+        <a class="button" href="{% url 'budgeting:budget_create' %}">
+            <span>＋</span>
+            ثبت بودجه جدید
+        </a>
+
+    </header>
+
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    {% for budget in budgets %}
+
+        <section class="budget-card">
+
+            <h2>{{ budget.category }}</h2>
+
+            <div class="budget-period">
+                ماه {{ budget.month }} سال {{ budget.year }}
+            </div>
+
+
+            <div class="numbers">
+
+                <div class="number-item">
+                    <span class="number-label">
+                        بودجه تعیین‌شده
+                    </span>
+
+                    <span class="number-value">
+                        {{ budget.amount|floatformat:0 }}
+                    </span>
+                </div>
+
+
+                <div class="number-item">
+                    <span class="number-label">
+                        هزینه واقعی
+                    </span>
+
+                    <span class="number-value">
+                        {{ budget.spent|floatformat:0 }}
+                    </span>
+                </div>
+
+
+                <div class="number-item">
+                    <span class="number-label">
+                        {% if budget.remaining >= 0 %}
+                            مبلغ باقی‌مانده
+                        {% else %}
+                            مبلغ بیشتر از بودجه
+                        {% endif %}
+                    </span>
+
+                    <span class="number-value">
+                        {% if budget.remaining >= 0 %}
+                            {{ budget.remaining|floatformat:0 }}
+                        {% else %}
+                            {{ budget.remaining|stringformat:"d" }}
+                        {% endif %}
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="progress-section">
+
+                <div class="progress-heading">
+
+                    <span>میزان مصرف بودجه</span>
+
+                    <span class="percentage">
+                        {{ budget.percentage }}٪
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="progress"
+                    role="progressbar"
+                    aria-valuenow="{{ budget.percentage }}"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-label="درصد مصرف بودجه"
+                >
+
+                    <div
+                        class="progress-bar"
+                        style="width: {% if budget.percentage > 100 %}100{% else %}{{ budget.percentage }}{% endif %}%;
+                        {% if budget.percentage >= 100 %}
+                            background: linear-gradient(90deg,#dc2626,#f87171);
+                        {% elif budget.percentage >= 80 %}
+                            background: linear-gradient(90deg,#d97706,#fbbf24);
+                        {% endif %}"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            {% if budget.percentage >= 100 %}
+
+                <p class="status danger">
+                    {{ budget.alert }}
+                </p>
+
+            {% elif budget.percentage >= 80 %}
+
+                <p class="status warning">
+                    {{ budget.alert }}
+                </p>
+
+            {% else %}
+
+                <p class="status success">
+                    وضعیت بودجه مناسب است.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+    {% empty %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                📊
+            </div>
+
+            <p>
+                هنوز بودجه‌ای ثبت نکرده‌ای.
+            </p>
+
+            <a class="button" href="{% url 'budgeting:budget_create' %}">
+                ثبت اولین بودجه
+            </a>
+
+        </div>
+
+    {% endfor %}
+
+
+    <div class="footer-actions">
+
+        <a class="back-link" href="/">
+            ← بازگشت به داشبورد
+        </a>
+
+    </div>
+
+
+    <footer class="footer">
+        SmartFinance AI · Intelligent Financial Management
+    </footer>
+
+</div>
+
+</body>
+</html>

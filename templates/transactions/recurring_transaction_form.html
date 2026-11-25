@@ -1,0 +1,443 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+    {% if edit_mode %}
+        ویرایش برنامه تکرارشونده
+    {% else %}
+        افزودن برنامه تکرارشونده
+    {% endif %}
+    | SmartFinance AI
+{% endblock %}
+
+
+{% block extra_css %}
+
+.recurring-page {
+    width: min(100% - 30px, 720px);
+    margin: 38px auto 55px;
+    animation: recurringFade .55s ease both;
+}
+
+.recurring-card {
+    position: relative;
+    padding: 32px;
+    border-radius: 24px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 41, 70, .88),
+        rgba(15, 23, 42, .92)
+    );
+    border: 1px solid rgba(148, 163, 184, .2);
+    box-shadow: 0 18px 55px rgba(0, 0, 0, .25);
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.recurring-card::before {
+    content: "";
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    top: -150px;
+    left: -90px;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, .15);
+    filter: blur(65px);
+    pointer-events: none;
+}
+
+.recurring-card::after {
+    content: "";
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    bottom: -140px;
+    right: -90px;
+    border-radius: 50%;
+    background: rgba(139, 92, 246, .12);
+    filter: blur(60px);
+    pointer-events: none;
+}
+
+.recurring-content {
+    position: relative;
+    z-index: 1;
+}
+
+.recurring-heading {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.recurring-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 16px;
+    background: rgba(56, 189, 248, .12);
+    border: 1px solid rgba(56, 189, 248, .25);
+    color: #38bdf8;
+    font-size: 25px;
+}
+
+.recurring-heading h1 {
+    color: #e2e8f0;
+    font-size: clamp(19px, 4vw, 25px);
+    line-height: 1.8;
+    margin: 0;
+}
+
+.recurring-subtitle {
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 2;
+    margin: 5px 0 0;
+}
+
+.recurring-note {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(14, 165, 233, .09);
+    border: 1px solid rgba(56, 189, 248, .23);
+    color: #bae6fd;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 12px;
+    line-height: 2.2;
+    margin-bottom: 25px;
+}
+
+.recurring-note-icon {
+    font-size: 19px;
+    flex-shrink: 0;
+}
+
+.recurring-form-group {
+    margin-bottom: 19px;
+}
+
+.recurring-form-group label {
+    display: block;
+    margin: 0 0 9px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #cbd5e1;
+    line-height: 1.9;
+}
+
+.recurring-form-group input,
+.recurring-form-group select,
+.recurring-form-group textarea {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    background: rgba(8, 15, 30, .8);
+    border: 1px solid #334155;
+    border-radius: 11px;
+    color: #f1f5f9;
+    font-family: Tahoma, sans-serif;
+    font-size: 13px;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.recurring-form-group input:focus,
+.recurring-form-group select:focus,
+.recurring-form-group textarea:focus {
+    outline: none;
+    border-color: #38bdf8;
+    background: rgba(8, 15, 30, .98);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, .11);
+}
+
+.recurring-form-group select option {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+.recurring-form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.recurring-form-group .jalali-picker-wrapper {
+    display: block;
+    width: 100%;
+}
+
+.recurring-form-group .jalali-picker-wrapper input {
+    width: 100%;
+}
+
+.recurring-help {
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 2;
+    margin-top: 7px;
+}
+
+.recurring-error {
+    color: #fda4af;
+    font-size: 12px;
+    line-height: 1.9;
+    margin-top: 7px;
+    padding: 7px 10px;
+    background: rgba(244, 63, 94, .08);
+    border-right: 2px solid #fb7185;
+    border-radius: 7px;
+}
+
+.recurring-non-field-errors {
+    margin-bottom: 18px;
+}
+
+.recurring-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 11px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(148, 163, 184, .15);
+}
+
+.recurring-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 12px 22px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font-family: Tahoma, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.recurring-button:hover {
+    transform: translateY(-3px);
+}
+
+.recurring-submit {
+    color: white;
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    box-shadow: 0 7px 20px rgba(2, 132, 199, .2);
+}
+
+.recurring-submit:hover {
+    box-shadow: 0 10px 25px rgba(56, 189, 248, .28);
+    filter: brightness(1.1);
+}
+
+.recurring-back {
+    color: #e2e8f0;
+    background: rgba(71, 85, 105, .35);
+    border-color: rgba(148, 163, 184, .2);
+}
+
+.recurring-back:hover {
+    background: rgba(71, 85, 105, .55);
+}
+
+.recurring-button:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 3px;
+}
+
+@keyframes recurringFade {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .recurring-page {
+        width: min(100% - 20px, 720px);
+        margin: 20px auto 35px;
+    }
+
+    .recurring-card {
+        padding: 21px 16px;
+        border-radius: 18px;
+    }
+
+    .recurring-heading {
+        gap: 11px;
+    }
+
+    .recurring-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 21px;
+    }
+
+    .recurring-note {
+        padding: 13px;
+    }
+
+    .recurring-actions {
+        flex-direction: column;
+    }
+
+    .recurring-button {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .recurring-page,
+    .recurring-button {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="recurring-page">
+
+    <div class="recurring-card">
+
+        <div class="recurring-content">
+
+            <div class="recurring-heading">
+
+                <div class="recurring-icon">
+                    ↻
+                </div>
+
+                <div>
+                    <h1>
+                        {% if edit_mode %}
+                            ویرایش برنامه تکرارشونده
+                        {% else %}
+                            افزودن برنامه تکرارشونده
+                        {% endif %}
+                    </h1>
+
+                    <p class="recurring-subtitle">
+                        مدیریت هوشمند تراکنش‌های دوره‌ای
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="recurring-note">
+
+                <span class="recurring-note-icon">ⓘ</span>
+
+                <div>
+                    با ثبت این برنامه، اطلاعات تراکنش و دوره تکرار آن ذخیره می‌شود.
+                    ثبت خودکار تراکنش‌ها طبق برنامه تکرار انجام خواهد شد.
+                </div>
+
+            </div>
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                {% for field in form %}
+
+                    <div class="recurring-form-group">
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <div class="recurring-help">
+                                {{ field.help_text }}
+                            </div>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                            <div class="recurring-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                {% endfor %}
+
+
+                {% if form.non_field_errors %}
+
+                    <div class="recurring-non-field-errors">
+
+                        {% for error in form.non_field_errors %}
+                            <div class="recurring-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <div class="recurring-actions">
+
+                    <button type="submit" class="recurring-button recurring-submit">
+
+                        {% if edit_mode %}
+                            ✓ ذخیره تغییرات
+                        {% else %}
+                            ＋ ثبت برنامه
+                        {% endif %}
+
+                    </button>
+
+
+                    {% if organization %}
+
+                        <a class="recurring-button recurring-back"
+                           href="{% url 'organization_recurring_transaction_list' organization.id %}">
+                            ← بازگشت
+                        </a>
+
+                    {% else %}
+
+                        <a class="recurring-button recurring-back"
+                           href="{% url 'recurring_transaction_list' %}">
+                            ← بازگشت
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

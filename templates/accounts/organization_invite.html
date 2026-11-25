@@ -1,0 +1,262 @@
+
+{% extends "accounts/base_accounts.html" %}
+
+{% block title %}دعوت عضو به سازمان{% endblock %}
+
+{% block content %}
+
+<div class="invite-organization">
+
+    <div class="form-icon">
+        <span>✉</span>
+    </div>
+
+    <h1>دعوت عضو به سازمان</h1>
+
+    <p class="description">
+        دعوت‌نامه عضویت در سازمان
+        <strong>{{ organization.name }}</strong>
+        را برای کاربر موردنظر ارسال کنید.
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+
+            <label for="invite-email">
+                ایمیل کاربر
+            </label>
+
+            <input
+                type="email"
+                id="invite-email"
+                name="email"
+                placeholder="example@gmail.com"
+                autocomplete="email"
+                required
+            >
+
+            <span class="field-hint">
+                آدرس ایمیل حساب کاربری فرد دعوت‌شونده را وارد کنید.
+            </span>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="invite-role">
+                نقش کاربر
+            </label>
+
+            <select id="invite-role" name="role" required>
+
+                <option value="manager">
+                    مدیر
+                </option>
+
+                <option value="accountant">
+                    حسابدار
+                </option>
+
+                <option value="viewer">
+                    مشاهده‌گر
+                </option>
+
+            </select>
+
+            <span class="field-hint">
+                نقش انتخاب‌شده، سطح دسترسی کاربر در سازمان را مشخص می‌کند.
+            </span>
+
+        </div>
+
+        <div class="role-information">
+
+            <div class="role-item">
+                <span class="role-indicator manager-indicator"></span>
+                <div>
+                    <strong>مدیر</strong>
+                    <p>دسترسی مدیریتی مطابق مجوزهای تعریف‌شده در سازمان</p>
+                </div>
+            </div>
+
+            <div class="role-item">
+                <span class="role-indicator accountant-indicator"></span>
+                <div>
+                    <strong>حسابدار</strong>
+                    <p>دسترسی به امور مالی و ثبت تراکنش‌ها مطابق مجوزها</p>
+                </div>
+            </div>
+
+            <div class="role-item">
+                <span class="role-indicator viewer-indicator"></span>
+                <div>
+                    <strong>مشاهده‌گر</strong>
+                    <p>مشاهده اطلاعات مجاز بدون دسترسی مدیریتی</p>
+                </div>
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn">
+            <span>✦</span>
+            ارسال دعوت‌نامه
+        </button>
+
+    </form>
+
+    <a href="{% url 'accounts:organization_list' %}" class="back-link">
+        ← بازگشت به سازمان‌های من
+    </a>
+
+</div>
+
+<style>
+    .invite-organization {
+        width: 100%;
+    }
+
+    .form-icon {
+        width: 62px;
+        height: 62px;
+        margin: 0 auto 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 19px;
+        background: linear-gradient(
+            135deg,
+            rgba(56, 189, 248, .18),
+            rgba(129, 140, 248, .18)
+        );
+        border: 1px solid rgba(56, 189, 248, .3);
+        box-shadow: 0 0 30px rgba(56, 189, 248, .1);
+    }
+
+    .form-icon span {
+        font-size: 29px;
+        color: #7dd3fc;
+        text-shadow: 0 0 15px rgba(56, 189, 248, .5);
+    }
+
+    .invite-organization h1 {
+        text-align: center;
+        margin-bottom: 12px;
+    }
+
+    .invite-organization .description {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .invite-organization .description strong {
+        display: inline-block;
+        color: #7dd3fc;
+        font-weight: 800;
+    }
+
+    .invite-organization .form-group {
+        margin-bottom: 22px;
+    }
+
+    .invite-organization input,
+    .invite-organization select {
+        min-height: 51px;
+    }
+
+    .field-hint {
+        display: block;
+        margin-top: 9px;
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.9;
+    }
+
+    .role-information {
+        padding: 15px;
+        margin: 24px 0;
+        border-radius: 14px;
+        background: rgba(8, 15, 30, .45);
+        border: 1px solid rgba(148, 163, 184, .13);
+    }
+
+    .role-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 11px 0;
+    }
+
+    .role-item + .role-item {
+        border-top: 1px solid rgba(148, 163, 184, .1);
+    }
+
+    .role-item strong {
+        display: block;
+        color: #e2e8f0;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .role-item p {
+        color: #94a3b8;
+        font-size: 11px;
+        line-height: 1.9;
+        margin: 0;
+    }
+
+    .role-indicator {
+        flex-shrink: 0;
+        width: 9px;
+        height: 9px;
+        margin-top: 5px;
+        border-radius: 50%;
+    }
+
+    .manager-indicator {
+        background: #818cf8;
+        box-shadow: 0 0 10px rgba(129, 140, 248, .5);
+    }
+
+    .accountant-indicator {
+        background: #38bdf8;
+        box-shadow: 0 0 10px rgba(56, 189, 248, .5);
+    }
+
+    .viewer-indicator {
+        background: #34d399;
+        box-shadow: 0 0 10px rgba(52, 211, 153, .5);
+    }
+
+    .invite-organization .btn {
+        min-height: 52px;
+        font-size: 14px;
+    }
+
+    .invite-organization .btn span {
+        font-size: 17px;
+    }
+
+    .invite-organization .back-link {
+        margin-top: 25px;
+    }
+
+    @media (max-width: 480px) {
+        .form-icon {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 18px;
+        }
+
+        .invite-organization .description {
+            font-size: 12px;
+        }
+
+        .role-information {
+            padding: 12px;
+        }
+    }
+</style>
+
+{% endblock %}

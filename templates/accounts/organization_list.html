@@ -1,0 +1,722 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>سازمان‌های من | SmartFinance AI</title>
+
+    <style>
+        :root {
+            --bg-main: #080d1b;
+            --bg-secondary: #0f172a;
+            --glass: rgba(15, 23, 42, .78);
+            --glass-light: rgba(30, 41, 59, .65);
+            --border: rgba(148, 163, 184, .16);
+            --primary: #38bdf8;
+            --secondary: #818cf8;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #34d399;
+            --danger: #fb7185;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 35px 20px 50px;
+            font-family: Tahoma, Arial, sans-serif;
+            color: var(--text-main);
+            background:
+                radial-gradient(circle at 10% 10%, rgba(56,189,248,.12), transparent 30%),
+                radial-gradient(circle at 90% 85%, rgba(129,140,248,.13), transparent 32%),
+                linear-gradient(135deg, #080d1b, #0f172a 55%, #111827);
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            filter: blur(110px);
+            opacity: .15;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body::before {
+            background: #0ea5e9;
+            top: -160px;
+            right: -100px;
+        }
+
+        body::after {
+            background: #6366f1;
+            bottom: -150px;
+            left: -100px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: auto;
+            animation: pageEnter .65s ease both;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header-content h1 {
+            font-size: 29px;
+            font-weight: 900;
+            margin: 0 0 10px;
+            background: linear-gradient(100deg, #38bdf8, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-content p {
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 2;
+            margin: 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 38px 0 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 19px;
+            font-weight: 800;
+            color: #e2e8f0;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 24px;
+            border-radius: 5px;
+            background: linear-gradient(#38bdf8, #818cf8);
+            box-shadow: 0 0 12px rgba(56,189,248,.45);
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin: -8px 0 20px;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 19px;
+            padding: 23px;
+            margin: 17px 0;
+            box-shadow:
+                0 15px 40px rgba(0,0,0,.19),
+                inset 0 1px 0 rgba(255,255,255,.025);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            transition: transform .28s ease,
+                        border-color .28s ease,
+                        box-shadow .28s ease;
+            animation: cardEnter .5s ease both;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 8%;
+            left: 8%;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(56,189,248,.4),
+                transparent
+            );
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(56,189,248,.28);
+            box-shadow: 0 19px 45px rgba(0,0,0,.26);
+        }
+
+        .card h2,
+        .card h3 {
+            color: #f1f5f9;
+            margin-top: 0;
+            line-height: 1.8;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .card h3 {
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 13px;
+            line-height: 2;
+        }
+
+        .muted {
+            color: var(--text-muted);
+        }
+
+        .success {
+            color: #6ee7b7;
+        }
+
+        .error {
+            color: #fda4af;
+        }
+
+        .button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            padding: 11px 15px;
+            margin: 5px 3px;
+            border: 1px solid rgba(125,211,252,.18);
+            border-radius: 10px;
+            background: linear-gradient(110deg, #0284c7, #2563eb);
+            color: white;
+            text-decoration: none;
+            font-family: Tahoma, Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .23s ease,
+                        box-shadow .23s ease,
+                        filter .23s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37,99,235,.24);
+            filter: brightness(1.13);
+        }
+
+        .button:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 3px;
+        }
+
+        .accept-button {
+            background: linear-gradient(110deg, #059669, #047857);
+            border-color: rgba(52,211,153,.25);
+        }
+
+        .salary-button {
+            background: linear-gradient(110deg, #7c3aed, #6d28d9);
+            border-color: rgba(167,139,250,.25);
+        }
+
+        .username-button {
+            background: linear-gradient(110deg, #0f766e, #0d9488);
+        }
+
+        .employee-chat-button {
+            background: linear-gradient(110deg, #0891b2, #0e7490);
+        }
+
+        .manager-chat-button {
+            background: linear-gradient(110deg, #2563eb, #4f46e5);
+        }
+
+        .unread-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 21px;
+            height: 21px;
+            padding: 0 6px;
+            margin-right: 4px;
+            border-radius: 20px;
+            background: #e11d48;
+            color: white;
+            font-size: 10px;
+            font-weight: 900;
+            box-shadow: 0 0 12px rgba(225,29,72,.3);
+            vertical-align: middle;
+        }
+
+        .invitation-card {
+            border-right: 4px solid #38bdf8;
+            background:
+                linear-gradient(120deg, rgba(56,189,248,.07), transparent 60%),
+                var(--glass);
+        }
+
+        .invitation-card .role {
+            color: #7dd3fc;
+            font-weight: 800;
+        }
+
+        .organization-card {
+            border-right: 4px solid #818cf8;
+        }
+
+        .organization-description {
+            margin: 0 0 17px;
+            color: var(--text-muted);
+        }
+
+        .organization-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(148,163,184,.1);
+        }
+
+        .empty {
+            color: var(--text-muted);
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 2;
+            background: rgba(30,41,59,.38);
+            border: 1px dashed rgba(148,163,184,.2);
+            border-radius: 14px;
+        }
+
+        .notice {
+            background: rgba(37,99,235,.11);
+            border: 1px solid rgba(59,130,246,.3);
+            color: #bfdbfe;
+            padding: 16px 18px;
+            border-radius: 13px;
+            margin: 20px 0;
+            font-size: 13px;
+            line-height: 2.1;
+            box-shadow: 0 8px 25px rgba(30,64,175,.08);
+        }
+
+        .message-box {
+            padding: 12px 15px;
+            border-radius: 11px;
+            margin: 9px 0;
+            font-size: 13px;
+            line-height: 1.9;
+            background: rgba(51,65,85,.5);
+            border: 1px solid var(--border);
+        }
+
+        .message-box.success {
+            background: rgba(16,185,129,.08);
+            border-color: rgba(52,211,153,.22);
+        }
+
+        .message-box.error {
+            background: rgba(244,63,94,.08);
+            border-color: rgba(251,113,133,.22);
+        }
+
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .back-section {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        @keyframes pageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 23px 14px 35px;
+            }
+
+            .header-content h1 {
+                font-size: 24px;
+            }
+
+            .section-title {
+                font-size: 17px;
+            }
+
+            .card {
+                padding: 18px;
+                border-radius: 15px;
+            }
+
+            .card h2 {
+                font-size: 18px;
+            }
+
+            .button {
+                margin: 4px 2px;
+                padding: 11px 12px;
+            }
+
+            .organization-actions {
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions .button {
+                flex: 1;
+            }
+
+            .organization-actions .button {
+                width: 100%;
+                margin: 4px 0;
+            }
+
+            .card {
+                padding: 16px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Page Header -->
+
+    <header class="page-header">
+
+        <div class="header-content">
+            <h1>سازمان‌های من</h1>
+            <p>
+                مدیریت سازمان‌ها، اعضا، امور مالی و ارتباطات سازمانی
+            </p>
+        </div>
+
+        <div class="header-actions">
+
+            {% if can_create_organization %}
+
+                <a class="button"
+                   href="{% url 'accounts:organization_create' %}">
+                    + ایجاد سازمان جدید
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </header>
+
+
+    {% if not can_create_organization %}
+
+        <div class="notice">
+            شما عضو یک سازمان هستید یا دعوت‌نامه فعالی دارید.
+            امکان ایجاد سازمان جدید برای شما فعال نیست.
+        </div>
+
+    {% endif %}
+
+
+    <!-- Messages -->
+
+    {% if messages %}
+
+        <div class="messages">
+
+            {% for message in messages %}
+
+                <div class="message-box {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- Received Invitations -->
+
+    <h2 class="section-title">
+        دعوت‌نامه‌های دریافتی
+    </h2>
+
+    <p class="section-subtitle">
+        دعوت‌نامه‌هایی که برای عضویت در سازمان‌ها دریافت کرده‌اید
+    </p>
+
+    {% for invitation in pending_invitations %}
+
+        <section class="card invitation-card">
+
+            <h3>{{ invitation.organization.name }}</h3>
+
+            <p class="muted">
+                شما به عضویت این سازمان دعوت شده‌اید.
+            </p>
+
+            <p>
+                نقش پیشنهادی:
+                <span class="role">
+                    {{ invitation.get_role_display }}
+                </span>
+            </p>
+
+            <p class="muted">
+                دعوت‌شده توسط:
+                {{ invitation.invited_by }}
+            </p>
+
+            <p class="muted">
+                تاریخ انقضا:
+                {{ invitation.expires_at|date:"Y/m/d - H:i" }}
+            </p>
+
+            <div class="organization-actions">
+
+                <a class="button accept-button"
+                   href="{% url 'accounts:accept_invitation' invitation.token %}">
+                    مشاهده و پذیرش دعوت
+                </a>
+
+            </div>
+
+        </section>
+
+    {% empty %}
+
+        <div class="empty">
+            در حال حاضر دعوت‌نامه فعالی برای شما ارسال نشده است.
+        </div>
+
+    {% endfor %}
+
+
+    <!-- User Organizations -->
+
+    <h2 class="section-title">
+        سازمان‌های عضو
+    </h2>
+
+    <p class="section-subtitle">
+        دسترسی به امکانات هر سازمان بر اساس نقش و سطح دسترسی شما
+    </p>
+
+    {% for organization in organizations %}
+
+        <section class="card organization-card">
+
+            <h2>{{ organization.name }}</h2>
+
+            <p class="organization-description">
+                مدیریت و مشاهده بخش‌های مختلف سازمان
+            </p>
+
+
+            <div class="organization-actions">
+
+
+                <!-- Personal Salary Dashboard -->
+
+                {% if organization.can_view_salary %}
+
+                    <a class="button salary-button"
+                       href="{% url 'viewer_salary_dashboard' organization.id %}">
+                        حقوق و پرداخت‌های من
+                    </a>
+
+                    <a class="button employee-chat-button"
+                       href="{% url 'employee_conversation' organization.id %}">
+
+                        ارتباط با مدیر
+
+                        {% if organization.unread_messages_count > 0 %}
+                            <span class="unread-badge">
+                                {{ organization.unread_messages_count }}
+                            </span>
+                        {% endif %}
+
+                    </a>
+
+                {% endif %}
+
+
+                <!-- Admin Management -->
+
+                {% if organization.can_manage %}
+
+                    <a class="button"
+                       href="{% url 'accounts:organization_invite' organization.id %}">
+                        دعوت عضو
+                    </a>
+
+                    <a class="button"
+                       href="{% url 'accounts:organization_members' organization.id %}">
+                        مدیریت اعضا و مشاهده نام‌های کاربری
+                    </a>
+
+                    <a class="button"
+                       href="{% url 'accounts:organization_invitations' organization.id %}">
+                        مدیریت دعوت‌نامه‌ها
+                    </a>
+
+                {% elif organization.can_manage_budgets %}
+
+                    <a class="button username-button"
+                       href="{% url 'accounts:organization_members' organization.id %}">
+                        مشاهده نام کاربری اعضا
+                    </a>
+
+                {% endif %}
+
+
+                <!-- Manager and Admin Communication -->
+
+                {% if organization.can_manage or organization.can_manage_budgets %}
+
+                    <a class="button manager-chat-button"
+                       href="{% url 'manager_conversations' organization.id %}">
+
+                        گفتگوهای کارکنان
+
+                        {% if organization.unread_messages_count > 0 %}
+                            <span class="unread-badge">
+                                {{ organization.unread_messages_count }}
+                            </span>
+                        {% endif %}
+
+                    </a>
+
+                {% endif %}
+
+
+                <!-- Financial Access -->
+
+                {% if organization.can_view_finances %}
+
+                    <a class="button"
+                       href="{% url 'organization_transaction_list' organization.id %}">
+                        تراکنش‌های مالی
+                    </a>
+
+                    <a class="button"
+                       href="{% url 'organization_dashboard' organization.id %}">
+                        داشبورد سازمان
+                    </a>
+
+                {% endif %}
+
+
+                <!-- Budget Access -->
+
+                {% if organization.can_view_budgets %}
+
+                    <a class="button"
+                       href="{% url 'budgeting:organization_budget_list' organization.id %}">
+
+                        {% if organization.can_manage_budgets %}
+                            مدیریت بودجه
+                        {% else %}
+                            مشاهده بودجه
+                        {% endif %}
+
+                    </a>
+
+                {% endif %}
+
+
+            </div>
+
+        </section>
+
+    {% empty %}
+
+        <div class="empty">
+            هنوز عضو هیچ سازمانی نشده‌اید.
+        </div>
+
+    {% endfor %}
+
+
+    <!-- Back to Dashboard -->
+
+    <div class="back-section">
+
+        <a class="button" href="/">
+            بازگشت به داشبورد
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

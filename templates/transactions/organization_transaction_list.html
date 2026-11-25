@@ -1,0 +1,459 @@
+
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}
+تراکنش‌های سازمان | SmartFinance AI
+{% endblock %}
+
+{% block extra_css %}
+
+.org-transactions-page {
+    width: min(100% - 32px, 1350px);
+    margin: 35px auto 50px;
+    animation: orgListFade .5s ease both;
+}
+
+.org-list-header {
+    padding: 28px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(56, 189, 248, .2);
+    border-radius: 22px;
+    background: linear-gradient(120deg, rgba(30, 41, 59, .96), rgba(49, 46, 129, .3));
+}
+
+.org-list-header h1 {
+    margin: 0 0 12px;
+    color: #7dd3fc;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.org-list-header h2 {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.org-list-header p {
+    margin: 12px 0 0;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.org-list-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 22px 0;
+}
+
+.org-list-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border: 1px solid rgba(56, 189, 248, .2);
+    border-radius: 12px;
+    background: linear-gradient(120deg, #0369a1, #0284c7);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: .25s ease;
+}
+
+.org-list-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(14, 165, 233, .2);
+    color: #fff;
+}
+
+.org-list-btn.dashboard-btn {
+    background: linear-gradient(120deg, #0f766e, #14b8a6);
+}
+
+.org-list-btn.report-btn {
+    background: linear-gradient(120deg, #15803d, #22c55e);
+}
+
+.org-list-btn.add-btn {
+    background: linear-gradient(120deg, #0369a1, #38bdf8);
+}
+
+.org-list-section {
+    padding: 24px;
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(30, 41, 59, .92), rgba(15, 23, 42, .95));
+    box-shadow: 0 15px 40px rgba(0, 0, 0, .16);
+}
+
+.org-list-section h3 {
+    margin: 0 0 20px;
+    color: #7dd3fc;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.org-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid rgba(148, 163, 184, .13);
+    border-radius: 13px;
+}
+
+.org-transactions-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    text-align: right;
+}
+
+.org-transactions-table th {
+    padding: 15px 13px;
+    background: rgba(56, 189, 248, .08);
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.org-transactions-table td {
+    padding: 14px 13px;
+    border-bottom: 1px solid rgba(148, 163, 184, .12);
+    color: #cbd5e1;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.org-transactions-table tbody tr {
+    transition: background .2s ease;
+}
+
+.org-transactions-table tbody tr:hover {
+    background: rgba(56, 189, 248, .045);
+}
+
+.org-transactions-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.org-amount {
+    direction: ltr;
+    text-align: right;
+    font-weight: 700;
+}
+
+.org-income {
+    color: #4ade80 !important;
+    font-weight: 700;
+}
+
+.org-expense {
+    color: #f87171 !important;
+    font-weight: 700;
+}
+
+.org-type-badge {
+    display: inline-block;
+    padding: 5px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.org-type-income {
+    background: rgba(34, 197, 94, .1);
+    color: #4ade80;
+}
+
+.org-type-expense {
+    background: rgba(239, 68, 68, .1);
+    color: #f87171;
+}
+
+.org-edit-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 700;
+    transition: color .2s ease;
+}
+
+.org-edit-link:hover {
+    color: #bae6fd;
+}
+
+.org-delete-link {
+    display: inline-block;
+    margin-right: 12px;
+    padding: 5px 9px;
+    border: 1px solid rgba(248, 113, 113, .2);
+    border-radius: 8px;
+    background: rgba(239, 68, 68, .08);
+    color: #f87171;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+.org-delete-link:hover {
+    background: rgba(239, 68, 68, .18);
+    border-color: rgba(248, 113, 113, .5);
+    color: #fca5a5;
+}
+
+.org-empty-state {
+    padding: 35px 20px;
+    border: 1px dashed rgba(148, 163, 184, .25);
+    border-radius: 14px;
+    color: #94a3b8;
+    text-align: center;
+    line-height: 2;
+    font-size: 13px;
+}
+
+.org-list-footer {
+    margin-top: 25px;
+}
+
+.org-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.org-back-link:hover {
+    color: #fff;
+}
+
+@keyframes orgListFade {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .org-transactions-page {
+        width: calc(100% - 22px);
+        margin-top: 20px;
+    }
+
+    .org-list-header {
+        padding: 22px 17px;
+    }
+
+    .org-list-header h1 {
+        font-size: 21px;
+    }
+
+    .org-list-section {
+        padding: 16px 12px;
+    }
+
+    .org-list-actions {
+        gap: 9px;
+    }
+
+    .org-list-btn {
+        flex: 1 1 calc(50% - 9px);
+        padding: 11px 9px;
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .org-transactions-page {
+        animation: none;
+    }
+
+    .org-list-btn,
+    .org-transactions-table tbody tr,
+    .org-delete-link {
+        transition: none;
+    }
+}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="org-transactions-page">
+
+    <div class="org-list-header">
+
+        <h1>تراکنش‌های مالی سازمان</h1>
+
+        <h2>{{ organization.name }}</h2>
+
+        <p>
+            مدیریت و مشاهده تراکنش‌های مالی سازمان
+        </p>
+
+    </div>
+
+    <div class="org-list-actions">
+
+        {% if can_add %}
+            <a href="{% url 'organization_dashboard' organization.id %}"
+               class="org-list-btn dashboard-btn">
+                <span>📊</span>
+                داشبورد مالی سازمان
+            </a>
+        {% endif %}
+
+        <a href="{% url 'organization_report' organization.id %}"
+           class="org-list-btn report-btn">
+            <span>📈</span>
+            گزارش مالی سازمان
+        </a>
+
+        {% if can_add %}
+            <a href="{% url 'organization_transaction_add' organization.id %}"
+               class="org-list-btn add-btn">
+                <span>＋</span>
+                ثبت تراکنش جدید
+            </a>
+        {% endif %}
+
+    </div>
+
+    <div class="org-list-section">
+
+        <h3>🧾 فهرست تراکنش‌ها</h3>
+
+        {% if transactions %}
+
+            <div class="org-table-wrapper">
+
+                <table class="org-transactions-table">
+
+                    <thead>
+                        <tr>
+                            <th>عنوان</th>
+                            <th>مبلغ</th>
+                            <th>نوع</th>
+                            <th>دسته‌بندی</th>
+                            <th>تاریخ</th>
+                            <th>ثبت‌کننده</th>
+
+                            {% if can_edit or can_delete %}
+                                <th>عملیات</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for transaction in transactions %}
+
+                            <tr>
+
+                                <td>
+                                    {{ transaction.title }}
+                                </td>
+
+                                <td class="org-amount" dir="ltr">
+                                    {{ transaction.amount|floatformat:0 }}
+                                </td>
+
+                                <td>
+
+                                    {% if transaction.transaction_type == "income" %}
+                                        <span class="org-type-badge org-type-income">
+                                            درآمد
+                                        </span>
+                                    {% else %}
+                                        <span class="org-type-badge org-type-expense">
+                                            هزینه
+                                        </span>
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    {{ transaction.category }}
+                                </td>
+
+                                <td>
+                                    {{ transaction.date|jalali_date }}
+                                </td>
+
+                                <td>
+                                    {{ transaction.created_by.username }}
+                                </td>
+
+                                {% if can_edit or can_delete %}
+
+                                    <td>
+
+                                        {% if can_edit %}
+                                            <a href="{% url 'organization_transaction_edit' organization.id transaction.id %}"
+                                               class="org-edit-link">
+                                                ویرایش
+                                            </a>
+                                        {% endif %}
+
+                                        {% if can_delete %}
+
+                                            <a
+                                                href="{% url 'organization_transaction_delete' organization.id transaction.id %}"
+                                                class="org-delete-link"
+                                            >
+                                                حذف
+                                            </a>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                {% endif %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="org-empty-state">
+                <div style="font-size:30px; margin-bottom:12px;">📭</div>
+                هنوز تراکنشی برای این سازمان ثبت نشده است.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <div class="org-list-footer">
+
+        <a href="{% url 'accounts:organization_list' %}"
+           class="org-back-link">
+            <span>←</span>
+            بازگشت به سازمان‌ها
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

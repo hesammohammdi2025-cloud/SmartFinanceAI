@@ -1,0 +1,516 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ارتباط با مدیر | {{ organization.name }}</title>
+
+    <style>
+        :root {
+            --bg: #080f20;
+            --surface: rgba(20, 32, 56, .84);
+            --border: rgba(148, 163, 184, .17);
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --cyan: #38bdf8;
+            --purple: #8b5cf6;
+            --green: #4ade80;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 35px 18px;
+            background:
+                radial-gradient(ellipse at 10% 10%, rgba(37, 99, 235, .17), transparent 38%),
+                radial-gradient(ellipse at 90% 85%, rgba(139, 92, 246, .15), transparent 38%),
+                var(--bg);
+            background-attachment: fixed;
+            color: var(--text);
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .2;
+            background-image:
+                radial-gradient(1px 1px at 15% 20%, #fff 50%, transparent),
+                radial-gradient(1px 1px at 75% 35%, #fff 50%, transparent),
+                radial-gradient(2px 2px at 45% 75%, #fff 50%, transparent);
+            background-size: 250px 250px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+            padding: 22px 25px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, .2);
+        }
+
+        h1 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 12px;
+            color: var(--cyan);
+            font-size: 23px;
+        }
+
+        .header-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 43px;
+            height: 43px;
+            border: 1px solid rgba(56, 189, 248, .3);
+            border-radius: 13px;
+            background: rgba(56, 189, 248, .1);
+            font-size: 21px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 2;
+        }
+
+        .chat-box {
+            overflow: hidden;
+            padding: 22px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, .2);
+        }
+
+        .chat-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 17px;
+            border-bottom: 1px solid var(--border);
+            color: #cbd5e1;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .online-indicator {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 12px rgba(74, 222, 128, .6);
+        }
+
+        .messages {
+            min-height: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+            padding: 22px 5px;
+            scroll-behavior: smooth;
+        }
+
+        .messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, .5);
+            border-radius: 10px;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, .35);
+            border-radius: 10px;
+        }
+
+        .message {
+            position: relative;
+            max-width: 82%;
+            padding: 14px 17px;
+            border: 1px solid transparent;
+            border-radius: 15px;
+            line-height: 2;
+            font-size: 13px;
+            overflow-wrap: anywhere;
+            animation: messageEnter .3s ease both;
+        }
+
+        .my-message {
+            align-self: flex-start;
+            color: #f0f9ff;
+            background: linear-gradient(135deg, rgba(3, 105, 161, .8), rgba(30, 64, 175, .75));
+            border-color: rgba(56, 189, 248, .25);
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 8px 22px rgba(2, 132, 199, .12);
+        }
+
+        .manager-message {
+            align-self: flex-end;
+            color: #e2e8f0;
+            background: rgba(51, 65, 85, .65);
+            border-color: rgba(148, 163, 184, .17);
+            border-bottom-left-radius: 4px;
+        }
+
+        .sender {
+            margin-bottom: 7px;
+            color: #bae6fd;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .manager-message .sender {
+            color: #c4b5fd;
+        }
+
+        .message-time {
+            display: block;
+            margin-top: 9px;
+            color: #cbd5e1;
+            font-size: 10px;
+            opacity: .8;
+        }
+
+        .read-status {
+            display: block;
+            margin-top: 5px;
+            color: #bae6fd;
+            font-size: 10px;
+        }
+
+        .read-status.is-read {
+            color: #86efac;
+        }
+
+        .empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            padding: 30px 15px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+            line-height: 2.3;
+        }
+
+        .empty-icon {
+            margin-bottom: 12px;
+            font-size: 42px;
+        }
+
+        .message-form {
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 11px;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        textarea {
+            display: block;
+            width: 100%;
+            min-height: 115px;
+            resize: vertical;
+            padding: 15px;
+            border: 1px solid rgba(148, 163, 184, .25);
+            border-radius: 13px;
+            background: rgba(8, 15, 32, .75);
+            color: white;
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 2;
+            outline: none;
+            transition: .25s;
+        }
+
+        textarea::placeholder {
+            color: #64748b;
+        }
+
+        textarea:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, .1);
+        }
+
+        .send-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 9px;
+            width: 100%;
+            margin-top: 13px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0284c7, #2563eb, #6366f1);
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 22px rgba(37, 99, 235, .22);
+            transition: .25s;
+        }
+
+        .send-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.12);
+            box-shadow: 0 10px 28px rgba(37, 99, 235, .3);
+        }
+
+        .alert {
+            margin-bottom: 15px;
+            padding: 13px 16px;
+            border: 1px solid rgba(56, 189, 248, .2);
+            border-radius: 11px;
+            background: rgba(14, 116, 144, .13);
+            color: #bae6fd;
+            font-size: 12px;
+            line-height: 2;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 11px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(30, 41, 59, .5);
+            color: var(--cyan);
+            font-size: 12px;
+            text-decoration: none;
+            transition: .25s;
+        }
+
+        .back-link:hover {
+            border-color: rgba(56, 189, 248, .4);
+            background: rgba(56, 189, 248, .08);
+            transform: translateY(-2px);
+        }
+
+        @keyframes messageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 14px 11px;
+            }
+
+            .header {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 19px;
+            }
+
+            .chat-box {
+                padding: 15px;
+            }
+
+            .message {
+                max-width: 95%;
+                padding: 12px 14px;
+            }
+
+            .messages {
+                min-height: 300px;
+                max-height: 450px;
+            }
+
+            textarea {
+                min-height: 100px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <div>
+            <h1>
+                <span class="header-icon">💬</span>
+                ارتباط با مدیر
+            </h1>
+
+            <div class="subtitle">
+                سازمان:
+                <strong>{{ organization.name }}</strong>
+            </div>
+        </div>
+    </header>
+
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+
+    <div class="chat-box">
+
+        <div class="chat-heading">
+            <span class="online-indicator"></span>
+            گفت‌وگوی سازمانی
+        </div>
+
+
+        <div class="messages" id="messages">
+
+            {% for message in conversation_messages %}
+
+                <div class="message
+                    {% if message.sender_id == request.user.id %}
+                        my-message
+                    {% else %}
+                        manager-message
+                    {% endif %}
+                ">
+
+                    <div class="sender">
+                        {% if message.sender_id == request.user.id %}
+                            شما
+                        {% else %}
+                            مدیر سازمان
+                        {% endif %}
+                    </div>
+
+                    {{ message.body|linebreaksbr }}
+
+                    <span class="message-time">
+                        {{ message.created_at|date:"Y/m/d - H:i" }}
+                    </span>
+
+                    {% if message.sender_id == request.user.id %}
+                        {% if message.is_read %}
+                            <span class="read-status is-read">
+                                ✓✓ خوانده‌شده توسط مدیر
+                            </span>
+                        {% else %}
+                            <span class="read-status">
+                                ✓ ارسال‌شده
+                            </span>
+                        {% endif %}
+                    {% endif %}
+
+                </div>
+
+            {% empty %}
+
+                <div class="empty">
+                    <span class="empty-icon">✉️</span>
+                    <strong>هنوز پیامی ارسال نشده است.</strong>
+                    می‌توانید اولین پیام خود را برای مدیر سازمان ارسال کنید.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <form method="post" class="message-form">
+            {% csrf_token %}
+
+            <label class="form-label" for="message-body">
+                پیام جدید
+            </label>
+
+            <textarea
+                id="message-body"
+                name="body"
+                maxlength="5000"
+                placeholder="پیام خود را برای مدیر بنویسید..."
+                required
+            ></textarea>
+
+            <button type="submit" class="send-button">
+                <span>➤</span>
+                ارسال پیام
+            </button>
+        </form>
+
+    </div>
+
+
+    <a
+        href="{% url 'accounts:organization_list' %}"
+        class="back-link"
+    >
+        ← بازگشت به سازمان‌های من
+    </a>
+
+</div>
+
+
+<script>
+    const messagesBox = document.getElementById("messages");
+
+    if (messagesBox) {
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

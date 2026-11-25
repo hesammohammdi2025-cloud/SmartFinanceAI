@@ -1,0 +1,308 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+ثبت تراکنش | SmartFinance AI
+{% endblock %}
+
+{% block extra_css %}
+
+.transaction-page {
+    width: min(100% - 32px, 680px);
+    margin: 45px auto;
+    animation: transactionFadeIn .6s ease both;
+}
+
+.transaction-card {
+    position: relative;
+    overflow: hidden;
+    padding: 32px;
+    border: 1px solid rgba(56, 189, 248, .25);
+    border-radius: 24px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 41, 59, .94),
+        rgba(15, 23, 42, .96)
+    );
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, .3),
+        0 0 25px rgba(56, 189, 248, .07);
+    backdrop-filter: blur(18px);
+}
+
+.transaction-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #8b5cf6, #38bdf8, #22c55e);
+}
+
+.transaction-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.transaction-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 18px;
+    border: 1px solid rgba(56, 189, 248, .3);
+    border-radius: 20px;
+    background: rgba(56, 189, 248, .1);
+    color: #38bdf8;
+    font-size: 30px;
+    box-shadow: 0 0 25px rgba(56, 189, 248, .12);
+}
+
+.transaction-header h1 {
+    margin: 0 0 10px;
+    color: #f8fafc;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.transaction-header p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.transaction-form p {
+    margin: 0 0 21px;
+}
+
+.transaction-form label {
+    display: block;
+    margin-bottom: 9px;
+    color: #cbd5e1;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.transaction-form input,
+.transaction-form select,
+.transaction-form textarea {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    outline: none;
+    background: rgba(15, 23, 42, .85);
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+}
+
+.transaction-form textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.transaction-form input:focus,
+.transaction-form select:focus,
+.transaction-form textarea:focus {
+    border-color: #38bdf8;
+    background: #0f172a;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, .12);
+}
+
+.transaction-form input::placeholder,
+.transaction-form textarea::placeholder {
+    color: #64748b;
+}
+
+.transaction-form select option {
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+.transaction-form .helptext {
+    display: block;
+    margin-top: 7px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.transaction-form .errorlist {
+    margin: 7px 0;
+    padding: 9px 12px;
+    border: 1px solid rgba(248, 113, 113, .25);
+    border-radius: 9px;
+    background: rgba(239, 68, 68, .08);
+    color: #fca5a5;
+    font-size: 12px;
+    list-style: none;
+}
+
+.transaction-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    width: 100%;
+    min-height: 49px;
+    margin-top: 28px;
+    border: 0;
+    border-radius: 13px;
+    background: linear-gradient(120deg, #0284c7, #38bdf8);
+    color: #082f49;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(14, 165, 233, .2);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.transaction-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(14, 165, 233, .3);
+}
+
+.transaction-back {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.transaction-back a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #7dd3fc;
+    font-size: 13px;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.transaction-back a:hover {
+    color: #fff;
+}
+
+.transaction-form .jalali-picker-wrapper {
+    display: block;
+    width: 100%;
+}
+
+.transaction-form .jalali-calendar {
+    right: 0;
+    left: auto;
+}
+
+@keyframes transactionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .transaction-page {
+        width: calc(100% - 24px);
+        margin: 25px auto;
+    }
+
+    .transaction-card {
+        padding: 22px 17px;
+        border-radius: 19px;
+    }
+
+    .transaction-header h1 {
+        font-size: 21px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .transaction-page {
+        animation: none;
+    }
+
+    .transaction-submit,
+    .transaction-form input,
+    .transaction-form select,
+    .transaction-form textarea {
+        transition: none;
+    }
+}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="transaction-page">
+
+    <div class="transaction-card">
+
+        <div class="transaction-header">
+
+            <div class="transaction-icon">
+                {% if edit_mode %}
+                    ✏️
+                {% else %}
+                    💳
+                {% endif %}
+            </div>
+
+            <h1>
+                {% if edit_mode %}
+                    ویرایش تراکنش
+                {% else %}
+                    ثبت درآمد یا هزینه
+                {% endif %}
+            </h1>
+
+            <p>
+                اطلاعات تراکنش مالی خود را وارد کنید.
+                {% if edit_mode %}
+                    تغییرات پس از ذخیره اعمال خواهند شد.
+                {% else %}
+                    اطلاعات با امنیت در حساب شما ثبت می‌شوند.
+                {% endif %}
+            </p>
+
+        </div>
+
+        <form method="post" class="transaction-form">
+
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <button type="submit" class="transaction-submit">
+                <span>✓</span>
+                {% if edit_mode %}
+                    ذخیره تغییرات
+                {% else %}
+                    ثبت تراکنش
+                {% endif %}
+            </button>
+
+        </form>
+
+        <div class="transaction-back">
+            <a href="/">
+                <span>←</span>
+                بازگشت به داشبورد
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

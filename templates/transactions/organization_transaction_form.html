@@ -1,0 +1,397 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+    {% if edit_mode %}
+        ویرایش تراکنش سازمان
+    {% else %}
+        ثبت تراکنش سازمان
+    {% endif %}
+    | SmartFinance AI
+{% endblock %}
+
+{% block extra_css %}
+
+.organization-form-page {
+    width: min(100% - 32px, 700px);
+    margin: 40px auto 55px;
+    animation: organizationFormFade .55s ease both;
+}
+
+.organization-form-container {
+    position: relative;
+    overflow: hidden;
+    padding: 32px;
+    border: 1px solid rgba(56, 189, 248, .22);
+    border-radius: 23px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 41, 59, .96),
+        rgba(15, 23, 42, .97)
+    );
+    color: #e2e8f0;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, .28);
+    backdrop-filter: blur(18px);
+}
+
+.organization-form-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #8b5cf6, #38bdf8, #22c55e);
+}
+
+.organization-form-header {
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.organization-form-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+    border: 1px solid rgba(56, 189, 248, .3);
+    border-radius: 21px;
+    background: rgba(56, 189, 248, .1);
+    color: #7dd3fc;
+    font-size: 29px;
+    box-shadow: 0 0 25px rgba(56, 189, 248, .1);
+}
+
+.organization-form-header h2 {
+    margin: 0 0 12px;
+    color: #7dd3fc;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.organization-form-header p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 2;
+}
+
+.organization-form-container .form-field {
+    margin-bottom: 21px;
+}
+
+.organization-form-container label {
+    display: block;
+    margin-bottom: 9px;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.organization-form-container input:not([type="checkbox"]):not([type="radio"]),
+.organization-form-container select,
+.organization-form-container textarea {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    outline: none;
+    background: rgba(15, 23, 42, .88);
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color .25s ease, box-shadow .25s ease;
+}
+
+.organization-form-container textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.organization-form-container input:focus,
+.organization-form-container select:focus,
+.organization-form-container textarea:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, .12);
+}
+
+.organization-form-container select option {
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+.organization-form-container input[type="checkbox"],
+.organization-form-container input[type="radio"] {
+    width: auto;
+    margin-left: 8px;
+    accent-color: #38bdf8;
+    vertical-align: middle;
+}
+
+.organization-form-container .helptext {
+    display: block;
+    margin-top: 7px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.organization-form-container .error,
+.organization-form-container .errorlist {
+    margin-top: 8px;
+    padding: 9px 12px;
+    border: 1px solid rgba(248, 113, 113, .22);
+    border-radius: 9px;
+    background: rgba(239, 68, 68, .08);
+    color: #fca5a5;
+    font-size: 12px;
+    line-height: 1.8;
+    list-style: none;
+}
+
+.organization-form-container .errorlist {
+    margin-bottom: 8px;
+    padding-right: 12px;
+}
+
+.organization-form-container .non-field-errors {
+    margin-bottom: 20px;
+}
+
+.organization-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.organization-form-submit,
+.organization-form-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 48px;
+    padding: 11px 18px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.organization-form-submit {
+    border: 0;
+    background: linear-gradient(120deg, #0369a1, #38bdf8);
+    color: #082f49;
+    box-shadow: 0 8px 22px rgba(14, 165, 233, .18);
+}
+
+.organization-form-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 11px 26px rgba(14, 165, 233, .28);
+}
+
+.organization-form-cancel {
+    border: 1px solid #475569;
+    background: rgba(51, 65, 85, .4);
+    color: #cbd5e1;
+}
+
+.organization-form-cancel:hover {
+    transform: translateY(-2px);
+    background: rgba(71, 85, 105, .5);
+    color: #fff;
+}
+
+@keyframes organizationFormFade {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .organization-form-page {
+        width: calc(100% - 22px);
+        margin: 24px auto 35px;
+    }
+
+    .organization-form-container {
+        padding: 23px 17px;
+        border-radius: 19px;
+    }
+
+    .organization-form-header h2 {
+        font-size: 21px;
+    }
+
+    .organization-form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .organization-form-page {
+        animation: none;
+    }
+
+    .organization-form-submit,
+    .organization-form-cancel,
+    .organization-form-container input,
+    .organization-form-container select,
+    .organization-form-container textarea {
+        transition: none;
+    }
+}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="organization-form-page">
+
+    <div class="organization-form-container" dir="rtl">
+
+        <div class="organization-form-header">
+
+            <div class="organization-form-icon">
+                {% if edit_mode %}
+                    ✏️
+                {% else %}
+                    💳
+                {% endif %}
+            </div>
+
+            <h2>
+                {% if edit_mode %}
+                    ویرایش تراکنش سازمان
+                {% else %}
+                    ثبت تراکنش سازمان
+                {% endif %}
+            </h2>
+
+            <p>
+                سازمان: {{ organization.name }}
+            </p>
+
+        </div>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+
+                <div
+                    class="form-field"
+                    id="field-wrapper-{{ field.name }}"
+                >
+
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="helptext">
+                            {{ field.help_text }}
+                        </small>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+            <div class="organization-form-actions">
+
+                <button type="submit" class="organization-form-submit">
+                    {% if edit_mode %}
+                        ✓ ذخیره تغییرات
+                    {% else %}
+                        ＋ ثبت تراکنش
+                    {% endif %}
+                </button>
+
+                <a
+                    href="{% url 'organization_transaction_list' organization.id %}"
+                    class="organization-form-cancel"
+                >
+                    انصراف
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const typeField = document.getElementById("id_transaction_type");
+    const salaryField = document.getElementById("id_is_salary");
+
+    const salaryWrapper = document.getElementById("field-wrapper-is_salary");
+    const recipientWrapper = document.getElementById("field-wrapper-recipient");
+    const paidAtWrapper = document.getElementById("field-wrapper-paid_at");
+
+    function updateSalaryFields() {
+
+        const isExpense = typeField && typeField.value === "expense";
+
+        if (salaryWrapper) {
+            salaryWrapper.style.display = isExpense ? "block" : "none";
+        }
+
+        const isSalary = isExpense && salaryField && salaryField.checked;
+
+        if (recipientWrapper) {
+            recipientWrapper.style.display = isSalary ? "block" : "none";
+        }
+
+        if (paidAtWrapper) {
+            paidAtWrapper.style.display = isSalary ? "block" : "none";
+        }
+    }
+
+    if (typeField) {
+        typeField.addEventListener("change", updateSalaryFields);
+    }
+
+    if (salaryField) {
+        salaryField.addEventListener("change", updateSalaryFields);
+    }
+
+    updateSalaryFields();
+
+});
+</script>
+
+{% endblock %}

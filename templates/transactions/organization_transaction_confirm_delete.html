@@ -1,0 +1,261 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+حذف تراکنش سازمان | SmartFinance AI
+{% endblock %}
+
+{% block extra_css %}
+
+.organization-delete-page {
+    width: min(100% - 32px, 580px);
+    margin: 55px auto;
+    animation: organizationDeleteFade .5s ease both;
+}
+
+.organization-delete-card {
+    position: relative;
+    overflow: hidden;
+    padding: 36px 30px;
+    border: 1px solid rgba(248, 113, 113, .25);
+    border-radius: 24px;
+    background: linear-gradient(
+        145deg,
+        rgba(30, 41, 59, .96),
+        rgba(15, 23, 42, .97)
+    );
+    color: #e2e8f0;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+    text-align: center;
+    backdrop-filter: blur(18px);
+}
+
+.organization-delete-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.organization-delete-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 22px;
+    border: 1px solid rgba(248, 113, 113, .3);
+    border-radius: 23px;
+    background: rgba(239, 68, 68, .1);
+    color: #f87171;
+    font-size: 34px;
+    box-shadow: 0 0 28px rgba(239, 68, 68, .1);
+}
+
+.organization-delete-card h1 {
+    margin: 0 0 15px;
+    color: #f8fafc;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.organization-delete-description {
+    margin: 0 auto 20px;
+    color: #cbd5e1;
+    font-size: 14px;
+    line-height: 2.2;
+}
+
+.organization-delete-info {
+    margin: 20px 0;
+    padding: 16px;
+    border: 1px solid rgba(56, 189, 248, .2);
+    border-radius: 13px;
+    background: rgba(56, 189, 248, .06);
+    text-align: right;
+}
+
+.organization-delete-info p {
+    margin: 7px 0;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.organization-delete-info strong {
+    color: #7dd3fc;
+}
+
+.organization-delete-transaction {
+    display: block;
+    margin-top: 12px;
+    padding: 13px;
+    border: 1px solid rgba(248, 113, 113, .2);
+    border-radius: 11px;
+    background: rgba(239, 68, 68, .07);
+    color: #fca5a5;
+    font-size: 15px;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.organization-delete-warning {
+    margin: 20px 0 26px;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 2;
+}
+
+.organization-delete-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.organization-delete-button,
+.organization-delete-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 48px;
+    padding: 12px 15px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.organization-delete-button {
+    border: 0;
+    background: linear-gradient(120deg, #dc2626, #f87171);
+    color: white;
+    box-shadow: 0 7px 20px rgba(239, 68, 68, .18);
+}
+
+.organization-delete-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, .3);
+}
+
+.organization-delete-cancel {
+    border: 1px solid #475569;
+    background: rgba(51, 65, 85, .45);
+    color: #e2e8f0;
+}
+
+.organization-delete-cancel:hover {
+    transform: translateY(-2px);
+    background: rgba(71, 85, 105, .55);
+}
+
+@keyframes organizationDeleteFade {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 500px) {
+    .organization-delete-page {
+        margin: 30px auto;
+    }
+
+    .organization-delete-card {
+        padding: 29px 18px;
+    }
+
+    .organization-delete-card h1 {
+        font-size: 21px;
+    }
+
+    .organization-delete-actions {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .organization-delete-page {
+        animation: none;
+    }
+
+    .organization-delete-button,
+    .organization-delete-cancel {
+        transition: none;
+    }
+}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="organization-delete-page" dir="rtl">
+
+    <div class="organization-delete-card">
+
+        <div class="organization-delete-icon">
+            ⚠️
+        </div>
+
+        <h1>حذف تراکنش سازمان</h1>
+
+        <p class="organization-delete-description">
+            آیا مطمئنی که می‌خواهی تراکنش زیر را حذف کنی؟
+        </p>
+
+        <div class="organization-delete-info">
+
+            <p>
+                سازمان:
+                <strong>{{ organization.name }}</strong>
+            </p>
+
+            <div class="organization-delete-transaction">
+                {{ transaction.title }}
+            </div>
+
+        </div>
+
+        <p class="organization-delete-warning">
+            پس از تأیید، تراکنش حذف خواهد شد.
+            لطفاً قبل از ادامه از انتخاب خود مطمئن شو.
+        </p>
+
+        <div class="organization-delete-actions">
+
+            <form method="post" style="flex: 1;">
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="organization-delete-button"
+                    style="width: 100%;"
+                >
+                    حذف تراکنش
+                </button>
+
+            </form>
+
+            <a
+                href="{% url 'organization_transaction_list' organization.id %}"
+                class="organization-delete-cancel"
+            >
+                انصراف
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

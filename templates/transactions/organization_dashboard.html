@@ -1,0 +1,946 @@
+
+{% extends "base.html" %}
+{% load jalali_tags %}
+
+{% block title %}داشبورد مالی سازمان | SmartFinance AI{% endblock %}
+
+{% block extra_css %}
+
+.organization-dashboard {
+    width: min(100% - 32px, 1450px);
+    margin: 30px auto 50px;
+    animation: orgFadeIn .6s ease both;
+}
+
+.page-heading {
+    position: relative;
+    overflow: hidden;
+    padding: 30px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(56, 189, 248, .2);
+    border-radius: 22px;
+    background: linear-gradient(120deg, rgba(30, 41, 59, .95), rgba(49, 46, 129, .35));
+    box-shadow: 0 15px 40px rgba(0, 0, 0, .15);
+}
+
+.page-heading::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    left: -45px;
+    top: -85px;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, .08);
+    filter: blur(8px);
+    pointer-events: none;
+}
+
+.page-heading h1 {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 10px;
+    color: #7dd3fc;
+    font-size: 27px;
+    font-weight: 800;
+}
+
+.muted {
+    color: #94a3b8;
+    line-height: 2;
+    font-size: 13px;
+}
+
+.page-heading .muted {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+}
+
+.org-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.org-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 19px;
+    border: 1px solid rgba(56, 189, 248, .25);
+    border-radius: 12px;
+    background: linear-gradient(120deg, #0369a1, #0284c7);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: .25s ease;
+}
+
+.org-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 24px rgba(14, 165, 233, .22);
+    color: #fff;
+}
+
+.org-action.income-action {
+    background: linear-gradient(120deg, #047857, #10b981);
+    border-color: rgba(52, 211, 153, .3);
+}
+
+.org-action.expense-action {
+    background: linear-gradient(120deg, #b91c1c, #ef4444);
+    border-color: rgba(248, 113, 113, .3);
+}
+
+.org-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin: 25px 0;
+}
+
+.org-stat-card {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+    padding: 23px;
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 19px;
+    background: linear-gradient(145deg, rgba(30, 41, 59, .95), rgba(15, 23, 42, .95));
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .17);
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.org-stat-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(56, 189, 248, .35);
+    box-shadow: 0 15px 35px rgba(14, 165, 233, .1);
+}
+
+.org-stat-card::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    left: -35px;
+    bottom: -45px;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, .07);
+    filter: blur(5px);
+    pointer-events: none;
+}
+
+.stat-label {
+    margin: 0 0 17px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stat-amount {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    color: #f8fafc;
+    font-size: clamp(19px, 2vw, 26px);
+    font-weight: 800;
+    direction: ltr;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.stat-income .stat-amount { color: #4ade80; }
+.stat-expense .stat-amount { color: #f87171; }
+.stat-balance .stat-amount { color: #7dd3fc; }
+.stat-count .stat-amount { color: #c4b5fd; }
+
+.org-section {
+    padding: 25px;
+    margin-top: 25px;
+    border: 1px solid rgba(148, 163, 184, .15);
+    border-radius: 21px;
+    background: linear-gradient(145deg, rgba(30, 41, 59, .9), rgba(15, 23, 42, .94));
+    box-shadow: 0 15px 40px rgba(0, 0, 0, .16);
+    backdrop-filter: blur(14px);
+}
+
+.org-section h2 {
+    margin: 0 0 23px;
+    color: #7dd3fc;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.chart-area {
+    position: relative;
+    width: 100%;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-svg {
+    display: block;
+    width: 100%;
+    max-width: 650px;
+    height: auto;
+    overflow: visible;
+}
+
+.donut-svg {
+    max-width: 390px;
+}
+
+.chart-svg text {
+    font-family: Tahoma, Arial, sans-serif;
+}
+
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 22px;
+    margin-top: 12px;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+}
+
+.chart-empty {
+    padding: 20px;
+    color: #94a3b8;
+    text-align: center;
+    line-height: 2;
+}
+
+.chart-tooltip {
+    fill: #f8fafc;
+    font-size: 11px;
+}
+
+.chart-bar {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: barGrow .9s ease both;
+}
+
+.donut-segment {
+    transition: opacity .2s ease;
+    cursor: default;
+}
+
+.donut-segment:hover {
+    opacity: .78;
+}
+
+@keyframes barGrow {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+}
+
+@keyframes orgFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid rgba(148, 163, 184, .12);
+    border-radius: 13px;
+}
+
+.org-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    text-align: right;
+}
+
+.org-table th,
+.org-table td {
+    padding: 15px;
+    border-bottom: 1px solid rgba(148, 163, 184, .12);
+    white-space: nowrap;
+}
+
+.org-table th {
+    background: rgba(56, 189, 248, .07);
+    color: #7dd3fc;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.org-table td {
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.org-table tbody tr {
+    transition: background .2s ease;
+}
+
+.org-table tbody tr:hover {
+    background: rgba(56, 189, 248, .045);
+}
+
+.org-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.income {
+    color: #4ade80 !important;
+    font-weight: 700;
+}
+
+.expense {
+    color: #f87171 !important;
+    font-weight: 700;
+}
+
+.org-empty {
+    padding: 25px 15px;
+    border: 1px dashed rgba(148, 163, 184, .25);
+    border-radius: 13px;
+    color: #94a3b8;
+    text-align: center;
+    line-height: 2;
+    font-size: 13px;
+}
+
+.org-back {
+    margin-top: 25px;
+}
+
+@media (max-width: 1000px) {
+    .org-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .organization-dashboard {
+        width: calc(100% - 22px);
+        margin-top: 18px;
+    }
+
+    .page-heading {
+        padding: 23px 18px;
+    }
+
+    .page-heading h1 {
+        font-size: 22px;
+    }
+
+    .org-stats {
+        gap: 11px;
+    }
+
+    .org-stat-card {
+        padding: 17px 13px;
+    }
+
+    .stat-amount {
+        font-size: 18px;
+    }
+
+    .org-section {
+        padding: 17px 13px;
+    }
+
+    .chart-area {
+        min-height: 260px;
+    }
+
+    .org-actions {
+        gap: 9px;
+    }
+
+    .org-action {
+        flex: 1 1 calc(50% - 9px);
+        padding: 11px 9px;
+        font-size: 12px;
+    }
+
+    .chart-legend {
+        gap: 12px;
+        font-size: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .organization-dashboard,
+    .chart-bar {
+        animation: none;
+    }
+
+    .org-stat-card,
+    .org-action,
+    .org-table tbody tr {
+        transition: none;
+    }
+}
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="organization-dashboard" dir="rtl">
+
+    <div class="page-heading">
+        <h1>🏢 داشبورد مالی سازمان</h1>
+        <p class="muted">
+            وضعیت مالی سازمان {{ organization.name }}
+        </p>
+    </div>
+
+    <div class="org-actions">
+
+        <a class="org-action"
+           href="{% url 'organization_transaction_list' organization.id %}">
+            <span>📋</span>
+            مشاهده همه تراکنش‌ها
+        </a>
+
+        <a class="org-action income-action"
+           href="{% url 'organization_transaction_add' organization.id %}?type=income">
+            <span>↗</span>
+            ثبت درآمد
+        </a>
+
+        <a class="org-action expense-action"
+           href="{% url 'organization_transaction_add' organization.id %}?type=expense">
+            <span>↙</span>
+            ثبت هزینه
+        </a>
+
+    </div>
+
+    <!-- خلاصه مالی -->
+
+    <div class="org-stats">
+
+        <div class="org-stat-card stat-income">
+            <p class="stat-label">💰 مجموع درآمد</p>
+            <p class="stat-amount">{{ total_income|floatformat:2 }}</p>
+        </div>
+
+        <div class="org-stat-card stat-expense">
+            <p class="stat-label">💸 مجموع هزینه</p>
+            <p class="stat-amount">{{ total_expenses|floatformat:2 }}</p>
+        </div>
+
+        <div class="org-stat-card stat-balance">
+            <p class="stat-label">📊 مانده خالص</p>
+            <p class="stat-amount">{{ balance|floatformat:2 }}</p>
+        </div>
+
+        <div class="org-stat-card stat-count">
+            <p class="stat-label">🧾 تعداد تراکنش‌ها</p>
+            <p class="stat-amount">{{ transaction_count }}</p>
+        </div>
+
+    </div>
+
+    <!-- نمودار حلقه‌ای درآمد و هزینه -->
+
+    <div class="org-section">
+        <h2>📊 مقایسه درآمد و هزینه</h2>
+
+        <div class="chart-area">
+            <div id="incomeExpenseChart" style="width:100%;"></div>
+        </div>
+
+        <div id="incomeExpenseLegend" class="chart-legend"></div>
+    </div>
+
+    <!-- نمودار روند ماهانه -->
+
+    <div class="org-section">
+        <h2>📈 روند مالی ماهانه</h2>
+
+        {% if monthly_labels %}
+            <div class="chart-area">
+                <div id="monthlyChart" style="width:100%;"></div>
+            </div>
+        {% else %}
+            <div class="org-empty">
+                <div style="font-size:30px; margin-bottom:10px;">📉</div>
+                هنوز اطلاعات کافی برای نمایش نمودار ماهانه وجود ندارد.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- آخرین تراکنش‌ها -->
+
+    <div class="org-section">
+        <h2>🧾 آخرین تراکنش‌های سازمان</h2>
+
+        {% if latest_transactions %}
+            <div class="table-wrapper">
+                <table class="org-table">
+                    <thead>
+                        <tr>
+                            <th>عنوان</th>
+                            <th>مبلغ</th>
+                            <th>نوع</th>
+                            <th>دسته‌بندی</th>
+                            <th>تاریخ</th>
+                            <th>ثبت‌کننده</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for transaction in latest_transactions %}
+                            <tr>
+                                <td>{{ transaction.title }}</td>
+
+                                <td dir="ltr">
+                                    {{ transaction.amount|floatformat:2 }}
+                                </td>
+
+                                <td>
+                                    {% if transaction.transaction_type == 'income' %}
+                                        <span class="income">درآمد</span>
+                                    {% else %}
+                                        <span class="expense">هزینه</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ transaction.category }}</td>
+                                <td>{{ transaction.date|jalali_date }}</td>
+                                <td>{{ transaction.created_by.username }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="org-empty">
+                <div style="font-size:30px; margin-bottom:10px;">📭</div>
+                هنوز تراکنشی برای این سازمان ثبت نشده است.
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="org-actions org-back">
+        <a class="org-action"
+           href="{% url 'accounts:organization_list' %}">
+            <span>←</span>
+            بازگشت به سازمان‌ها
+        </a>
+    </div>
+
+</div>
+
+<!-- انتقال داده‌های Django به JavaScript -->
+
+{{ total_income|json_script:"total-income-data" }}
+{{ total_expenses|json_script:"total-expenses-data" }}
+
+{{ monthly_labels|json_script:"monthly-labels-data" }}
+{{ monthly_income|json_script:"monthly-income-data" }}
+{{ monthly_expenses|json_script:"monthly-expenses-data" }}
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+(function () {
+    "use strict";
+
+    const SVG_NS = "http://www.w3.org/2000/svg";
+
+    function readData(id) {
+        const element = document.getElementById(id);
+
+        if (!element) return null;
+
+        try {
+            return JSON.parse(element.textContent);
+        } catch (error) {
+            console.error("خطا در خواندن داده:", id, error);
+            return null;
+        }
+    }
+
+    function createSvgElement(name, attributes, parent) {
+        const element = document.createElementNS(SVG_NS, name);
+
+        Object.keys(attributes || {}).forEach(function (key) {
+            element.setAttribute(key, attributes[key]);
+        });
+
+        if (parent) parent.appendChild(element);
+
+        return element;
+    }
+
+    function addText(parent, x, y, content, attributes) {
+        const text = createSvgElement("text", {
+            x: x,
+            y: y,
+            "text-anchor": "middle",
+            fill: "#cbd5e1",
+            "font-size": "12",
+            "font-family": "Tahoma, Arial, sans-serif",
+            ...(attributes || {})
+        }, parent);
+
+        text.textContent = content;
+        return text;
+    }
+
+    function formatAmount(value) {
+        return Number(value || 0).toLocaleString("fa-IR", {
+            maximumFractionDigits: 0
+        });
+    }
+
+    // ساخت نمودار حلقه‌ای
+
+    function renderDonut(income, expenses) {
+        const container = document.getElementById("incomeExpenseChart");
+        const legend = document.getElementById("incomeExpenseLegend");
+
+        if (!container || !legend) return;
+
+        container.innerHTML = "";
+        legend.innerHTML = "";
+
+        const width = 360;
+        const height = 300;
+        const centerX = 180;
+        const centerY = 140;
+        const radius = 91;
+        const strokeWidth = 29;
+
+        const total = income + expenses;
+
+        const svg = createSvgElement("svg", {
+            viewBox: "0 0 360 300",
+            class: "chart-svg donut-svg",
+            role: "img",
+            "aria-label": "نمودار مقایسه درآمد و هزینه"
+        });
+
+        container.appendChild(svg);
+
+        const circumference = 2 * Math.PI * radius;
+
+        // حلقه پس‌زمینه
+
+        createSvgElement("circle", {
+            cx: centerX,
+            cy: centerY,
+            r: radius,
+            fill: "none",
+            stroke: "rgba(148,163,184,.15)",
+            "stroke-width": strokeWidth
+        }, svg);
+
+        if (total > 0) {
+            const incomeLength = circumference * (income / total);
+            const expenseLength = circumference * (expenses / total);
+
+            createSvgElement("circle", {
+                cx: centerX,
+                cy: centerY,
+                r: radius,
+                fill: "none",
+                stroke: "#22c55e",
+                "stroke-width": strokeWidth,
+                "stroke-dasharray": incomeLength + " " + circumference,
+                "stroke-dashoffset": 0,
+                transform: "rotate(-90 180 140)",
+                class: "donut-segment"
+            }, svg);
+
+            createSvgElement("circle", {
+                cx: centerX,
+                cy: centerY,
+                r: radius,
+                fill: "none",
+                stroke: "#ef4444",
+                "stroke-width": strokeWidth,
+                "stroke-dasharray": expenseLength + " " + circumference,
+                "stroke-dashoffset": -incomeLength,
+                transform: "rotate(-90 180 140)",
+                class: "donut-segment"
+            }, svg);
+        }
+
+        addText(svg, centerX, centerY - 8, "مجموع", {
+            fill: "#94a3b8",
+            "font-size": "13"
+        });
+
+        addText(svg, centerX, centerY + 20, formatAmount(total), {
+            fill: "#f8fafc",
+            "font-size": "17",
+            "font-weight": "bold"
+        });
+
+        // راهنمای نمودار
+
+        const items = [
+            {
+                label: "درآمد",
+                value: income,
+                color: "#22c55e"
+            },
+            {
+                label: "هزینه",
+                value: expenses,
+                color: "#ef4444"
+            }
+        ];
+
+        items.forEach(function (item) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "legend-item";
+
+            const dot = document.createElement("span");
+            dot.className = "legend-dot";
+            dot.style.background = item.color;
+
+            const text = document.createElement("span");
+            text.textContent =
+                item.label + ": " + formatAmount(item.value);
+
+            wrapper.appendChild(dot);
+            wrapper.appendChild(text);
+            legend.appendChild(wrapper);
+        });
+    }
+
+    // ساخت نمودار میله‌ای ماهانه
+
+    function renderMonthly(labels, incomes, expenses) {
+        const container = document.getElementById("monthlyChart");
+
+        if (!container) return;
+
+        container.innerHTML = "";
+
+        if (!labels.length) {
+            container.innerHTML =
+                '<div class="chart-empty">اطلاعات ماهانه‌ای برای نمایش وجود ندارد.</div>';
+            return;
+        }
+
+        const width = 760;
+        const height = 320;
+
+        const margin = {
+            top: 30,
+            right: 48,
+            bottom: 65,
+            left: 48
+        };
+
+        const plotWidth = width - margin.left - margin.right;
+        const plotHeight = height - margin.top - margin.bottom;
+
+        const values = [];
+
+        labels.forEach(function (_, index) {
+            values.push(Number(incomes[index]) || 0);
+            values.push(Number(expenses[index]) || 0);
+        });
+
+        const maximum = Math.max(...values, 1);
+        const chartMaximum = maximum * 1.2;
+
+        const svg = createSvgElement("svg", {
+            viewBox: "0 0 " + width + " " + height,
+            class: "chart-svg",
+            role: "img",
+            "aria-label": "نمودار درآمد و هزینه ماهانه"
+        });
+
+        container.appendChild(svg);
+
+        // خطوط راهنمای افقی
+
+        for (let i = 0; i <= 4; i++) {
+            const y = margin.top + (plotHeight / 4) * i;
+            const value = chartMaximum * (1 - i / 4);
+
+            createSvgElement("line", {
+                x1: margin.left,
+                y1: y,
+                x2: width - margin.right,
+                y2: y,
+                stroke: "rgba(148,163,184,.16)",
+                "stroke-width": 1
+            }, svg);
+
+            addText(
+                svg,
+                margin.left - 7,
+                y + 4,
+                formatAmount(value),
+                {
+                    "text-anchor": "end",
+                    fill: "#94a3b8",
+                    "font-size": "10"
+                }
+            );
+        }
+
+        const groupWidth = plotWidth / labels.length;
+        const barWidth = Math.min(23, groupWidth * 0.27);
+        const gap = Math.min(7, groupWidth * 0.08);
+
+        labels.forEach(function (label, index) {
+            const center =
+                margin.left + groupWidth * (index + 0.5);
+
+            const income = Number(incomes[index]) || 0;
+            const expense = Number(expenses[index]) || 0;
+
+            const incomeHeight =
+                (income / chartMaximum) * plotHeight;
+
+            const expenseHeight =
+                (expense / chartMaximum) * plotHeight;
+
+            const incomeX = center - barWidth - gap / 2;
+            const expenseX = center + gap / 2;
+
+            const baseY = margin.top + plotHeight;
+
+            const incomeBar = createSvgElement("rect", {
+                x: incomeX,
+                y: baseY - incomeHeight,
+                width: barWidth,
+                height: Math.max(incomeHeight, 0),
+                rx: 5,
+                fill: "#22c55e",
+                class: "chart-bar"
+            }, svg);
+
+            const expenseBar = createSvgElement("rect", {
+                x: expenseX,
+                y: baseY - expenseHeight,
+                width: barWidth,
+                height: Math.max(expenseHeight, 0),
+                rx: 5,
+                fill: "#ef4444",
+                class: "chart-bar"
+            }, svg);
+
+            const incomeTitle = createSvgElement("title", {}, incomeBar);
+            incomeTitle.textContent =
+                "درآمد " + label + ": " + formatAmount(income);
+
+            const expenseTitle = createSvgElement("title", {}, expenseBar);
+            expenseTitle.textContent =
+                "هزینه " + label + ": " + formatAmount(expense);
+
+            addText(
+                svg,
+                center,
+                baseY + 23,
+                String(label),
+                {
+                    fill: "#cbd5e1",
+                    "font-size": labels.length > 8 ? "9" : "11"
+                }
+            );
+        });
+
+        // راهنمای نمودار
+
+        const legend = document.createElement("div");
+        legend.className = "chart-legend";
+
+        [
+            { label: "درآمد ماهانه", color: "#22c55e" },
+            { label: "هزینه ماهانه", color: "#ef4444" }
+        ].forEach(function (item) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "legend-item";
+
+            const dot = document.createElement("span");
+            dot.className = "legend-dot";
+            dot.style.background = item.color;
+
+            const text = document.createElement("span");
+            text.textContent = item.label;
+
+            wrapper.appendChild(dot);
+            wrapper.appendChild(text);
+            legend.appendChild(wrapper);
+        });
+
+        container.appendChild(legend);
+    }
+
+    function initialize() {
+        const totalIncome =
+            Number(readData("total-income-data")) || 0;
+
+        const totalExpenses =
+            Number(readData("total-expenses-data")) || 0;
+
+        const monthlyLabels =
+            readData("monthly-labels-data") || [];
+
+        const monthlyIncome =
+            (readData("monthly-income-data") || []).map(Number);
+
+        const monthlyExpenses =
+            (readData("monthly-expenses-data") || []).map(Number);
+
+        try {
+            renderDonut(totalIncome, totalExpenses);
+
+            renderMonthly(
+                monthlyLabels,
+                monthlyIncome,
+                monthlyExpenses
+            );
+
+        } catch (error) {
+            console.error("خطا در ساخت نمودارهای سازمان:", error);
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initialize);
+    } else {
+        initialize();
+    }
+
+})();
+</script>
+
+{% endblock %}

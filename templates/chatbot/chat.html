@@ -1,0 +1,1483 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080d1b">
+    <title>دستیار هوشمند | SmartFinance AI</title>
+
+    <style>
+        :root {
+            --bg: #080d1b;
+            --bg-soft: #0e1729;
+            --panel: rgba(18, 30, 52, .82);
+            --panel-light: rgba(30, 45, 70, .72);
+            --border: rgba(125, 211, 252, .15);
+            --border-hover: rgba(56, 189, 248, .4);
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --cyan: #38bdf8;
+            --blue: #3b82f6;
+            --violet: #8b5cf6;
+            --green: #34d399;
+            --red: #f87171;
+            --amber: #fbbf24;
+            --radius: 20px;
+            --shadow: 0 20px 60px rgba(0, 0, 0, .28);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 35px 16px;
+            color: var(--text);
+            font-family: Tahoma, Arial, sans-serif;
+            background:
+                radial-gradient(ellipse at 15% 10%, rgba(37, 99, 235, .17), transparent 35%),
+                radial-gradient(ellipse at 85% 85%, rgba(124, 58, 237, .14), transparent 35%),
+                linear-gradient(135deg, #080d1b, #101b30 55%, #0a1020);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: .12;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body::before {
+            background: #0ea5e9;
+            top: -160px;
+            right: -100px;
+        }
+
+        body::after {
+            background: #7c3aed;
+            bottom: -170px;
+            left: -100px;
+        }
+
+        button,
+        textarea,
+        select {
+            font-family: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            width: min(100%, 1050px);
+            margin: auto;
+            animation: pageEnter .65s ease both;
+        }
+
+        @keyframes pageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 22px;
+            padding: 0 5px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: -.5px;
+            background: linear-gradient(90deg, #7dd3fc, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 14px rgba(56, 189, 248, .2));
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, .6);
+            color: #7dd3fc;
+            text-decoration: none;
+            font-size: 12px;
+            transition: .25s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(14, 116, 144, .2);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(56, 189, 248, .12);
+        }
+
+        .chat-box {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            background: var(--panel);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            box-shadow: var(--shadow), 0 0 45px rgba(56, 189, 248, .04);
+        }
+
+        .chat-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 8%;
+            left: 8%;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(56, 189, 248, .8),
+                rgba(139, 92, 246, .7),
+                transparent
+            );
+        }
+
+        .chat-header {
+            position: relative;
+            padding: 25px 26px;
+            border-bottom: 1px solid var(--border);
+            background:
+                linear-gradient(110deg, rgba(14, 165, 233, .09), transparent 55%),
+                rgba(15, 23, 42, .25);
+        }
+
+        .chat-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 10px;
+            color: #f1f5f9;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .chat-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 2;
+        }
+
+        .organization-area {
+            padding: 19px 23px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 23, 42, .32);
+        }
+
+        .organization-area label {
+            display: block;
+            margin-bottom: 10px;
+            color: #7dd3fc;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .organization-area select {
+            width: 100%;
+            min-height: 47px;
+            padding: 12px 14px;
+            border: 1px solid rgba(71, 85, 105, .8);
+            border-radius: 12px;
+            outline: none;
+            background: #101b30;
+            color: #f1f5f9;
+            font-size: 13px;
+            transition: .25s ease;
+        }
+
+        .organization-area select:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, .1);
+        }
+
+        .organization-area select:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        .organization-area option {
+            background: #101b30;
+            color: white;
+        }
+
+        .organization-help {
+            display: block;
+            margin-top: 9px;
+            color: #8192aa;
+            font-size: 11px;
+            line-height: 2;
+        }
+
+        .messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, .035), transparent 60%);
+            scrollbar-width: thin;
+            scrollbar-color: #334e70 transparent;
+        }
+
+        .messages::-webkit-scrollbar,
+        .preview-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages::-webkit-scrollbar-track,
+        .preview-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages::-webkit-scrollbar-thumb,
+        .preview-list::-webkit-scrollbar-thumb {
+            background: #334e70;
+            border-radius: 20px;
+        }
+
+        .message {
+            position: relative;
+            max-width: 84%;
+            padding: 14px 17px;
+            border: 1px solid transparent;
+            border-radius: 17px;
+            line-height: 2.1;
+            font-size: 13px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            animation: messageEnter .3s ease both;
+        }
+
+        @keyframes messageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(9px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            align-self: flex-start;
+            color: #f0f9ff;
+            background: linear-gradient(135deg, rgba(3, 105, 161, .88), rgba(29, 78, 216, .75));
+            border-color: rgba(56, 189, 248, .25);
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 8px 24px rgba(2, 132, 199, .1);
+        }
+
+        .assistant-message {
+            align-self: flex-end;
+            color: #e2e8f0;
+            background: linear-gradient(135deg, rgba(30, 41, 59, .95), rgba(39, 52, 77, .88));
+            border-color: rgba(148, 163, 184, .16);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-label {
+            display: block;
+            margin-bottom: 7px;
+            color: #7dd3fc;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .user-message .message-label {
+            color: #bae6fd;
+        }
+
+        .welcome {
+            width: min(100%, 500px);
+            margin: auto;
+            padding: 42px 20px;
+            border: 1px dashed rgba(56, 189, 248, .2);
+            border-radius: 20px;
+            background: rgba(15, 23, 42, .28);
+            text-align: center;
+            color: var(--muted);
+            line-height: 2.3;
+            font-size: 13px;
+        }
+
+        .welcome > div {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 76px;
+            height: 76px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(56, 189, 248, .25);
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(14, 165, 233, .15), rgba(139, 92, 246, .15));
+            box-shadow: 0 0 35px rgba(56, 189, 248, .1);
+            animation: robotFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes robotFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .welcome strong {
+            color: #e0f2fe;
+            font-size: 14px;
+        }
+
+        .typing {
+            display: none;
+            padding: 0 24px 15px;
+            color: #7dd3fc;
+            font-size: 11px;
+            animation: typingPulse 1.3s ease-in-out infinite;
+        }
+
+        @keyframes typingPulse {
+            0%, 100% { opacity: .55; }
+            50% { opacity: 1; }
+        }
+
+        .quick-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            background: rgba(15, 23, 42, .24);
+        }
+
+        .quick-prompts button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 15px;
+            border: 1px solid rgba(56, 189, 248, .24);
+            border-radius: 12px;
+            background: rgba(14, 116, 144, .13);
+            color: #bae6fd;
+            font-size: 11px;
+            cursor: pointer;
+            transition: .25s ease;
+        }
+
+        .quick-prompts button:hover {
+            transform: translateY(-2px);
+            border-color: var(--cyan);
+            background: linear-gradient(120deg, #0369a1, #2563eb);
+            color: white;
+            box-shadow: 0 7px 20px rgba(14, 165, 233, .16);
+        }
+
+        .status-message {
+            min-height: 24px;
+            padding: 7px 20px;
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.8;
+            background: rgba(15, 23, 42, .2);
+        }
+
+        .input-area {
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+            padding: 17px 20px 20px;
+            border-top: 1px solid var(--border);
+            background: rgba(15, 23, 42, .35);
+        }
+
+        .input-area textarea {
+            flex: 1;
+            min-width: 0;
+            min-height: 52px;
+            max-height: 150px;
+            resize: vertical;
+            padding: 15px 16px;
+            border: 1px solid rgba(71, 85, 105, .8);
+            border-radius: 14px;
+            outline: none;
+            background: rgba(8, 15, 30, .85);
+            color: #f1f5f9;
+            font-size: 13px;
+            line-height: 1.8;
+            transition: .25s ease;
+        }
+
+        .input-area textarea::placeholder {
+            color: #64748b;
+        }
+
+        .input-area textarea:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, .09);
+        }
+
+        .send-btn {
+            min-width: 105px;
+            padding: 0 23px;
+            border: 1px solid rgba(125, 211, 252, .35);
+            border-radius: 14px;
+            background: linear-gradient(135deg, #0284c7, #2563eb 60%, #4f46e5);
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .25s ease;
+            box-shadow: 0 7px 22px rgba(37, 99, 235, .18);
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(37, 99, 235, .3);
+            filter: brightness(1.12);
+        }
+
+        .send-btn:active {
+            transform: translateY(0);
+        }
+
+        .send-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* پیش‌نمایش حذف گروهی */
+
+        .transaction-preview {
+            width: 100%;
+            max-width: 600px;
+            align-self: flex-end;
+            margin: 6px 0;
+            padding: 19px;
+            border: 1px solid rgba(245, 158, 11, .45);
+            border-radius: 18px;
+            background:
+                linear-gradient(145deg, rgba(120, 53, 15, .15), transparent 60%),
+                rgba(23, 35, 55, .96);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, .2);
+            font-size: 12px;
+            line-height: 2;
+            animation: messageEnter .35s ease both;
+        }
+
+        .transaction-preview h3 {
+            margin: 0 0 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(245, 158, 11, .2);
+            color: var(--amber);
+            font-size: 15px;
+        }
+
+        .preview-summary {
+            margin-bottom: 15px;
+            padding: 13px;
+            border: 1px solid rgba(148, 163, 184, .13);
+            border-radius: 12px;
+            background: rgba(8, 15, 30, .65);
+        }
+
+        .preview-summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 7px 0;
+        }
+
+        .preview-summary-row span:first-child {
+            color: var(--muted);
+        }
+
+        .preview-summary-row span:last-child {
+            color: #f8fafc;
+            font-weight: bold;
+            text-align: left;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-total {
+            color: var(--amber) !important;
+        }
+
+        .preview-list-title {
+            margin: 15px 0 10px;
+            color: #7dd3fc;
+            font-weight: bold;
+        }
+
+        .preview-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-left: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: #475569 transparent;
+        }
+
+        .preview-item {
+            margin-bottom: 10px;
+            padding: 12px;
+            border: 1px solid rgba(71, 85, 105, .5);
+            border-radius: 12px;
+            background: rgba(8, 15, 30, .7);
+            transition: .2s ease;
+        }
+
+        .preview-item:hover {
+            border-color: rgba(56, 189, 248, .3);
+        }
+
+        .preview-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .preview-item-title {
+            margin-bottom: 8px;
+            color: #7dd3fc;
+            font-size: 13px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(71, 85, 105, .3);
+        }
+
+        .preview-row:last-child {
+            border-bottom: none;
+        }
+
+        .preview-row span:first-child {
+            flex-shrink: 0;
+            color: var(--muted);
+        }
+
+        .preview-row span:last-child {
+            color: #e2e8f0;
+            text-align: left;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-warning {
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid rgba(245, 158, 11, .3);
+            border-radius: 11px;
+            background: rgba(120, 53, 15, .2);
+            color: #fcd34d;
+            line-height: 2.1;
+            font-size: 11px;
+        }
+
+        .confirm-btn,
+        .cancel-btn {
+            width: 100%;
+            min-height: 44px;
+            border-radius: 11px;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .25s ease;
+        }
+
+        .confirm-btn {
+            margin-top: 15px;
+            padding: 12px;
+            border: 1px solid rgba(248, 113, 113, .35);
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+            color: white;
+            box-shadow: 0 7px 20px rgba(220, 38, 38, .12);
+        }
+
+        .confirm-btn:hover {
+            background: linear-gradient(135deg, #991b1b, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 9px 23px rgba(220, 38, 38, .2);
+        }
+
+        .confirm-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cancel-btn {
+            margin-top: 9px;
+            padding: 10px;
+            border: 1px solid rgba(148, 163, 184, .25);
+            background: rgba(51, 65, 85, .25);
+            color: #cbd5e1;
+        }
+
+        .cancel-btn:hover {
+            border-color: rgba(56, 189, 248, .4);
+            background: rgba(51, 65, 85, .55);
+        }
+
+        .candidate-card {
+            width: 100%;
+            max-width: 470px;
+            align-self: flex-end;
+            margin: 4px 0;
+            padding: 14px;
+            border: 1px solid rgba(56, 189, 248, .2);
+            border-radius: 14px;
+            background: rgba(23, 35, 55, .92);
+            font-size: 12px;
+            line-height: 2;
+            animation: messageEnter .3s ease both;
+        }
+
+        .candidate-card strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #7dd3fc;
+        }
+
+        /* حالت موبایل */
+
+        @media (max-width: 700px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .container {
+                width: 100%;
+            }
+
+            .header {
+                margin-bottom: 17px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .back-link {
+                padding: 9px 11px;
+                font-size: 10px;
+            }
+
+            .chat-box {
+                border-radius: 19px;
+            }
+
+            .chat-header {
+                padding: 20px 17px;
+            }
+
+            .chat-header h2 {
+                font-size: 16px;
+            }
+
+            .organization-area {
+                padding: 16px;
+            }
+
+            .messages {
+                height: 55vh;
+                min-height: 340px;
+                max-height: 550px;
+                padding: 15px 12px;
+                gap: 13px;
+            }
+
+            .message {
+                max-width: 94%;
+                padding: 12px 13px;
+                font-size: 12px;
+            }
+
+            .welcome {
+                padding: 30px 13px;
+            }
+
+            .quick-prompts {
+                padding: 13px;
+                gap: 7px;
+            }
+
+            .quick-prompts button {
+                padding: 9px 11px;
+                font-size: 10px;
+            }
+
+            .input-area {
+                flex-direction: column;
+                padding: 13px;
+                gap: 9px;
+            }
+
+            .input-area textarea {
+                width: 100%;
+                min-height: 85px;
+            }
+
+            .send-btn {
+                min-height: 45px;
+                width: 100%;
+            }
+
+            .transaction-preview {
+                max-width: 100%;
+                padding: 14px;
+            }
+
+            .preview-list {
+                max-height: 260px;
+            }
+
+            .candidate-card {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .header h1 {
+                font-size: 15px;
+            }
+
+            .back-link {
+                font-size: 9px;
+                padding: 8px;
+            }
+
+            .quick-prompts button {
+                flex: 1 1 100%;
+                justify-content: center;
+            }
+
+            .preview-summary-row {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 3px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>SmartFinance AI</h1>
+        <a href="/" class="back-link">بازگشت به داشبورد ←</a>
+    </div>
+
+    <div class="chat-box">
+
+        <div class="chat-header">
+            <h2>دستیار هوشمند مالی 🤖</h2>
+            <p>سؤالات مالی خود را بپرسید و پاسخ دریافت کنید.</p>
+        </div>
+
+        <div class="organization-area">
+            <label for="organizationSelect">
+                محدوده فعالیت دستیار
+            </label>
+
+            <select id="organizationSelect">
+                <option value="">
+                    اطلاعات مالی شخصی من
+                </option>
+
+                {% for organization in organizations %}
+                    <option
+                        value="{{ organization.pk }}"
+                        {% if selected_organization and selected_organization.pk == organization.pk %}
+                            selected
+                        {% endif %}
+                    >
+                        {{ organization.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <span class="organization-help">
+                برای مدیریت اطلاعات مالی یک سازمان، آن را انتخاب کن.
+                در حالت شخصی، اطلاعات مالی سازمان‌ها در دسترس دستیار نیست.
+            </span>
+        </div>
+
+        <div class="messages" id="messages">
+
+            {% for message in chat_history %}
+                <div class="message {% if message.role == 'user' %}user-message{% else %}assistant-message{% endif %}">
+                    <span class="message-label">
+                        {% if message.role == 'user' %}
+                            شما
+                        {% else %}
+                            SmartFinance AI
+                        {% endif %}
+                    </span>
+                    {{ message.content }}
+                </div>
+            {% empty %}
+                <div class="welcome" id="welcome">
+                    <div style="font-size: 40px;">🤖</div>
+                    <strong>
+                        سلام! به دستیار هوشمند مالی خوش آمدی.
+                    </strong>
+                    <br>
+                    می‌توانی درباره درآمد، هزینه، بودجه و سلامت مالی خودت سؤال کنی.
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="typing" id="typing">
+            دستیار در حال بررسی اطلاعات مالی است...
+        </div>
+
+        <div class="quick-prompts">
+
+            <button type="button"
+                    onclick="sendQuickQuestion('تحلیل مالی من')">
+                📊 تحلیل مالی
+            </button>
+
+            <button type="button"
+                    onclick="sendQuickQuestion('وضعیت بودجه من چطوره؟')">
+                💰 وضعیت بودجه
+            </button>
+
+            <button type="button"
+                    onclick="sendQuickQuestion('پیشنهادهای مالی بده')">
+                💡 پیشنهاد مالی
+            </button>
+
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <form id="chatForm" class="input-area">
+            {% csrf_token %}
+
+            <textarea
+                id="question"
+                name="question"
+                placeholder="سؤال خود را بنویس..."
+                required
+            ></textarea>
+
+            <button type="submit"
+                    class="send-btn"
+                    id="sendBtn">
+                ارسال
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById("chatForm");
+    const questionInput = document.getElementById("question");
+    const messages = document.getElementById("messages");
+    const typing = document.getElementById("typing");
+    const sendBtn = document.getElementById("sendBtn");
+
+    const organizationSelect = document.getElementById(
+        "organizationSelect"
+    );
+
+    const statusMessage = document.getElementById(
+        "statusMessage"
+    );
+
+    const csrfToken = document.querySelector(
+        "[name=csrfmiddlewaretoken]"
+    ).value;
+
+    const confirmUrl = "{% url 'chatbot:confirm_organization_deletion' %}";
+
+    let requestInProgress = false;
+
+    function formatAmount(value) {
+        const amount = Number(value);
+
+        if (!Number.isFinite(amount)) {
+            return String(value ?? "-");
+        }
+
+        return new Intl.NumberFormat("fa-IR", {
+            maximumFractionDigits: 2
+        }).format(amount);
+    }
+
+    function addMessage(content, role) {
+        const welcome = document.getElementById("welcome");
+
+        if (welcome) {
+            welcome.remove();
+        }
+
+        const message = document.createElement("div");
+
+        message.className = "message " +
+            (role === "user"
+                ? "user-message"
+                : "assistant-message");
+
+        const label = document.createElement("span");
+        label.className = "message-label";
+
+        label.textContent = role === "user"
+            ? "شما"
+            : "SmartFinance AI";
+
+        const text = document.createElement("span");
+        text.textContent = content;
+
+        message.appendChild(label);
+        message.appendChild(text);
+
+        messages.appendChild(message);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function createPreviewRow(labelText, valueText) {
+        const row = document.createElement("div");
+        row.className = "preview-row";
+
+        const label = document.createElement("span");
+        label.textContent = labelText;
+
+        const value = document.createElement("span");
+        value.textContent = valueText || "-";
+
+        row.appendChild(label);
+        row.appendChild(value);
+
+        return row;
+    }
+
+    function addTransactionPreview(data) {
+        const welcome = document.getElementById("welcome");
+
+        if (welcome) {
+            welcome.remove();
+        }
+
+        const transactions = Array.isArray(data.transactions)
+            ? data.transactions
+            : [];
+
+        const totalCount = Number(data.count);
+
+        if (
+            !data.token ||
+            !Number.isInteger(totalCount) ||
+            totalCount <= 0 ||
+            transactions.length === 0 ||
+            transactions.length > totalCount
+        ) {
+            addMessage(
+                "اطلاعات پیش‌نمایش حذف معتبر نیست. لطفاً درخواست را دوباره ارسال کن.",
+                "assistant"
+            );
+            return;
+        }
+
+        const card = document.createElement("div");
+        card.className = "transaction-preview";
+
+        const heading = document.createElement("h3");
+        heading.textContent = "پیش‌نمایش حذف گروهی تراکنش‌ها";
+
+        card.appendChild(heading);
+
+        // خلاصه درخواست
+        const summary = document.createElement("div");
+        summary.className = "preview-summary";
+
+        const organizationRow = document.createElement("div");
+        organizationRow.className = "preview-summary-row";
+
+        const organizationLabel = document.createElement("span");
+        organizationLabel.textContent = "سازمان";
+
+        const organizationValue = document.createElement("span");
+        organizationValue.textContent =
+            data.organization_name || "-";
+
+        organizationRow.appendChild(organizationLabel);
+        organizationRow.appendChild(organizationValue);
+
+        const countRow = document.createElement("div");
+        countRow.className = "preview-summary-row";
+
+        const countLabel = document.createElement("span");
+        countLabel.textContent = "تعداد کل تراکنش‌های انتخاب‌شده";
+
+        const countValue = document.createElement("span");
+        countValue.textContent = formatAmount(totalCount);
+
+        countRow.appendChild(countLabel);
+        countRow.appendChild(countValue);
+
+        const totalRow = document.createElement("div");
+        totalRow.className = "preview-summary-row";
+
+        const totalLabel = document.createElement("span");
+        totalLabel.textContent = "مجموع مبلغ تمام تراکنش‌ها";
+
+        const totalValue = document.createElement("span");
+        totalValue.className = "preview-total";
+        totalValue.textContent =
+            formatAmount(data.total_amount) + " تومان";
+
+        totalRow.appendChild(totalLabel);
+        totalRow.appendChild(totalValue);
+
+        summary.appendChild(organizationRow);
+        summary.appendChild(countRow);
+        summary.appendChild(totalRow);
+
+        card.appendChild(summary);
+
+        // فهرست نمونه تراکنش‌ها
+        const listTitle = document.createElement("div");
+        listTitle.className = "preview-list-title";
+        listTitle.textContent =
+            "نمونه تراکنش‌های انتخاب‌شده:";
+
+        card.appendChild(listTitle);
+
+        const list = document.createElement("div");
+        list.className = "preview-list";
+
+        transactions.forEach(function(item, index) {
+            const itemCard = document.createElement("div");
+            itemCard.className = "preview-item";
+
+            const itemTitle = document.createElement("div");
+            itemTitle.className = "preview-item-title";
+
+            itemTitle.textContent =
+                (index + 1) + ". " + (item.title || "بدون عنوان");
+
+            itemCard.appendChild(itemTitle);
+
+            itemCard.appendChild(
+                createPreviewRow(
+                    "مبلغ",
+                    formatAmount(item.amount) + " تومان"
+                )
+            );
+
+            itemCard.appendChild(
+                createPreviewRow(
+                    "نوع تراکنش",
+                    item.transaction_type
+                )
+            );
+
+            itemCard.appendChild(
+                createPreviewRow(
+                    "دسته‌بندی",
+                    item.category || "ثبت نشده"
+                )
+            );
+
+            itemCard.appendChild(
+                createPreviewRow(
+                    "تاریخ",
+                    item.date
+                )
+            );
+
+            itemCard.appendChild(
+                createPreviewRow(
+                    "توضیحات",
+                    item.description || "ثبت نشده"
+                )
+            );
+
+            list.appendChild(itemCard);
+        });
+
+        card.appendChild(list);
+
+        // نمایش تعداد مواردی که نمونه آن‌ها نمایش داده نشده است
+        const remainingCount = totalCount - transactions.length;
+
+        if (remainingCount > 0) {
+            const remainingInfo = document.createElement("div");
+            remainingInfo.className = "preview-warning";
+
+            remainingInfo.textContent =
+                formatAmount(transactions.length) +
+                " نمونه از " +
+                formatAmount(totalCount) +
+                " تراکنش نمایش داده شده است. " +
+                formatAmount(remainingCount) +
+                " تراکنش دیگر نیز در درخواست حذف انتخاب شده‌اند.";
+
+            card.appendChild(remainingInfo);
+        }
+
+        // هشدار حذف
+        const warning = document.createElement("div");
+        warning.className = "preview-warning";
+
+        warning.textContent =
+            "هشدار مهم: با تأیید نهایی، تمام " +
+            formatAmount(totalCount) +
+            " تراکنش انتخاب‌شده از سازمان حذف خواهند شد؛ " +
+            "نه فقط نمونه‌های نمایش‌داده‌شده. " +
+            "مجموع مبلغ بالا نیز مربوط به تمام موارد انتخاب‌شده است.";
+
+        card.appendChild(warning);
+
+        // دکمه تأیید
+        const confirmButton = document.createElement("button");
+
+        confirmButton.type = "button";
+        confirmButton.className = "confirm-btn";
+
+        confirmButton.textContent =
+            "تأیید نهایی حذف همه " +
+            formatAmount(totalCount) +
+            " تراکنش";
+
+        confirmButton.addEventListener("click", function() {
+            confirmDeletion(data.token, confirmButton);
+        });
+
+        card.appendChild(confirmButton);
+
+        // دکمه انصراف
+        const cancelButton = document.createElement("button");
+
+        cancelButton.type = "button";
+        cancelButton.className = "cancel-btn";
+        cancelButton.textContent = "انصراف و حفظ تمام تراکنش‌ها";
+
+        cancelButton.addEventListener("click", function() {
+            card.remove();
+
+            addMessage(
+                "درخواست حذف لغو شد. هیچ تراکنشی حذف نشد.",
+                "assistant"
+            );
+        });
+
+        card.appendChild(cancelButton);
+
+        messages.appendChild(card);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function addCandidates(candidates) {
+        if (!candidates || !candidates.length) {
+            return;
+        }
+
+        const heading = document.createElement("div");
+        heading.className = "message assistant-message";
+
+        heading.textContent =
+            "تراکنش‌های مشابه پیدا شده‌اند. لطفاً مشخصات دقیق‌تری وارد کن:";
+
+        messages.appendChild(heading);
+
+        candidates.forEach(function(item) {
+            const card = document.createElement("div");
+            card.className = "candidate-card";
+
+            const title = document.createElement("strong");
+            title.textContent = item.title || "بدون عنوان";
+
+            const details = document.createElement("div");
+
+            details.textContent =
+                "مبلغ: " +
+                formatAmount(item.amount) +
+                " تومان | " +
+                "نوع: " + (item.transaction_type || "-") +
+                " | تاریخ: " + (item.date || "-");
+
+            card.appendChild(title);
+            card.appendChild(details);
+
+            messages.appendChild(card);
+        });
+
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function confirmDeletion(token, button) {
+        if (!confirm(
+            "آیا تمام تراکنش‌های انتخاب‌شده را برای همیشه حذف می‌کنی؟"
+        )) {
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "در حال تأیید و حذف گروهی...";
+
+        try {
+            const response = await fetch(confirmUrl, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": csrfToken,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    token: token
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.error || "تأیید حذف انجام نشد."
+                );
+            }
+
+            const preview = button.closest(
+                ".transaction-preview"
+            );
+
+            if (preview) {
+                preview.remove();
+            }
+
+            addMessage(
+                data.message ||
+                formatAmount(data.deleted_count) +
+                " تراکنش با موفقیت حذف شد.",
+                "assistant"
+            );
+
+        } catch (error) {
+            addMessage(
+                error.message ||
+                "در حذف تراکنش‌ها مشکلی رخ داد.",
+                "assistant"
+            );
+
+            button.disabled = false;
+            button.textContent = "تلاش مجدد برای تأیید";
+        }
+    }
+
+    async function sendQuestion(question) {
+        if (!question || requestInProgress) {
+            return;
+        }
+
+        requestInProgress = true;
+
+        addMessage(question, "user");
+
+        questionInput.value = "";
+        typing.style.display = "block";
+        sendBtn.disabled = true;
+
+        try {
+            const response = await fetch(window.location.href, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRFToken": csrfToken
+                },
+                body: new URLSearchParams({
+                    question: question,
+                    organization_id: organizationSelect.value
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.error || "خطا در دریافت پاسخ"
+                );
+            }
+
+            addMessage(data.answer, "assistant");
+
+            if (data.pending_deletion) {
+                addTransactionPreview(data.pending_deletion);
+            }
+
+            if (data.candidates) {
+                addCandidates(data.candidates);
+            }
+
+        } catch (error) {
+            addMessage(
+                error.message ||
+                "در ارتباط با سرور مشکلی پیش آمد. لطفاً دوباره تلاش کن.",
+                "assistant"
+            );
+        } finally {
+            requestInProgress = false;
+            typing.style.display = "none";
+            sendBtn.disabled = false;
+            questionInput.focus();
+        }
+    }
+
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const question = questionInput.value.trim();
+
+        if (!question) {
+            return;
+        }
+
+        sendQuestion(question);
+    });
+
+    organizationSelect.addEventListener(
+        "change",
+        async function() {
+            if (requestInProgress) {
+                statusMessage.textContent =
+                    "لطفاً تا پایان درخواست فعلی صبر کن.";
+                return;
+            }
+
+            requestInProgress = true;
+            organizationSelect.disabled = true;
+
+            statusMessage.textContent =
+                "در حال تغییر محدوده فعالیت دستیار...";
+
+            try {
+                const response = await fetch(
+                    window.location.href,
+                    {
+                        method: "POST",
+                        headers: {
+                            "X-Requested-With": "XMLHttpRequest",
+                            "X-CSRFToken": csrfToken
+                        },
+                        body: new URLSearchParams({
+                            organization_id: organizationSelect.value
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(
+                        data.error || "تغییر سازمان انجام نشد."
+                    );
+                }
+
+                statusMessage.textContent =
+                    data.organization_name
+                    ? "سازمان فعال: " + data.organization_name
+                    : "حالت مالی شخصی فعال شد.";
+
+                addMessage(
+                    data.organization_name
+                    ? "محدوده دستیار به سازمان «" +
+                      data.organization_name +
+                      "» تغییر کرد."
+                    : "محدوده دستیار به اطلاعات مالی شخصی تغییر کرد.",
+                    "assistant"
+                );
+
+            } catch (error) {
+                statusMessage.textContent = error.message;
+
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1200);
+
+            } finally {
+                requestInProgress = false;
+                organizationSelect.disabled = false;
+            }
+        }
+    );
+
+    questionInput.addEventListener("keydown", function(event) {
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+            event.preventDefault();
+            form.requestSubmit();
+        }
+    });
+
+    function sendQuickQuestion(question) {
+        questionInput.value = question;
+        form.requestSubmit();
+    }
+
+    messages.scrollTop = messages.scrollHeight;
+</script>
+
+</body>
+</html>
